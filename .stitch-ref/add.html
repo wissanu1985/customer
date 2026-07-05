@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .form-focus:focus {
+            outline: none;
+            border-color: #0060ac;
+            box-shadow: 0 0 0 2px rgba(0, 96, 172, 0.2);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#a7c8ff",
+                        "surface": "#f8f9ff",
+                        "tertiary-fixed": "#e0e3e6",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#3a5f94",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#003366",
+                        "secondary-fixed-dim": "#a4c9ff",
+                        "on-surface": "#0b1c30",
+                        "primary-fixed": "#d5e3ff",
+                        "on-primary-container": "#799dd6",
+                        "on-tertiary-container": "#999c9f",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "primary-fixed-dim": "#a7c8ff",
+                        "on-secondary-fixed-variant": "#004883",
+                        "on-secondary-fixed": "#001c39",
+                        "surface-dim": "#cbdbf5",
+                        "outline": "#737780",
+                        "on-tertiary-fixed-variant": "#43474a",
+                        "on-surface-variant": "#43474f",
+                        "inverse-on-surface": "#eaf1ff",
+                        "outline-variant": "#c3c6d1",
+                        "tertiary-fixed-dim": "#c3c7ca",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#d4e3ff",
+                        "secondary": "#0060ac",
+                        "on-tertiary-fixed": "#181c1e",
+                        "surface-bright": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "surface-container-high": "#dce9ff",
+                        "primary": "#001e40",
+                        "on-background": "#0b1c30",
+                        "inverse-surface": "#213145",
+                        "surface-container-highest": "#d3e4fe",
+                        "tertiary-container": "#303436",
+                        "secondary-container": "#68abff",
+                        "on-secondary-container": "#003e73",
+                        "on-primary-fixed": "#001b3c",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#1b1f21",
+                        "on-primary-fixed-variant": "#1f477b",
+                        "surface-container": "#e5eeff",
+                        "background": "#f8f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "stack-md": "12px",
+                        "stack-sm": "4px",
+                        "stack-lg": "24px",
+                        "base": "8px",
+                        "sidebar-width": "260px",
+                        "container-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Be Vietnam Pro"],
+                        "headline-lg": ["Be Vietnam Pro"],
+                        "label-md": ["Be Vietnam Pro"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "title-lg": ["Be Vietnam Pro"],
+                        "headline-md": ["Be Vietnam Pro"],
+                        "caption": ["Be Vietnam Pro"],
+                        "display-lg": ["Be Vietnam Pro"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background font-body-md text-on-surface flex min-h-screen">
+<!-- SideNavBar Component -->
+<nav class="fixed left-0 top-0 h-full w-[260px] bg-primary dark:bg-on-background flex flex-col py-6 space-y-4 shadow-lg z-40">
+<div class="px-6 mb-8">
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-primary">CIM System</h1>
+<p class="text-on-primary-container text-caption opacity-70">Management Console</p>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center px-4 py-3 text-on-primary-container dark:text-primary-fixed-dim hover:bg-on-primary-fixed-variant mx-2 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="font-label-md text-label-md">หน้าหลัก</span>
+</a>
+<!-- Active State: เพิ่มข้อมูลลูกค้า -->
+<a class="flex items-center px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg mx-2 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined mr-3">person_add</span>
+<span class="font-label-md text-label-md">เพิ่มข้อมูลลูกค้า</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-primary-container dark:text-primary-fixed-dim hover:bg-on-primary-fixed-variant mx-2 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined mr-3">search</span>
+<span class="font-label-md text-label-md">ค้นหาลูกค้า</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-primary-container dark:text-primary-fixed-dim hover:bg-on-primary-fixed-variant mx-2 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined mr-3">assessment</span>
+<span class="font-label-md text-label-md">รายงาน</span>
+</a>
+</div>
+<div class="pt-6 border-t border-on-primary-fixed-variant/20">
+<a class="flex items-center px-4 py-3 text-on-primary-container dark:text-primary-fixed-dim hover:bg-on-primary-fixed-variant mx-2 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="font-label-md text-label-md">ตั้งค่า</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-primary-container dark:text-primary-fixed-dim hover:bg-on-primary-fixed-variant mx-2 transition-all" href="#">
+<span class="material-symbols-outlined mr-3">logout</span>
+<span class="font-label-md text-label-md">ออกจากระบบ</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-[260px] min-h-screen flex flex-col">
+<!-- TopNavBar Component -->
+<header class="fixed top-0 left-[260px] right-0 h-16 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flex justify-between items-center px-gutter z-30">
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full w-64 text-label-md focus:ring-2 focus:ring-secondary transition-all" placeholder="ค้นหาเมนูหรือคำสั่ง..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+<div class="text-right">
+<p class="font-label-md text-label-md leading-none">เจ้าหน้าที่ฝ่ายข้อมูล</p>
+<p class="text-[10px] text-on-surface-variant">Admin Level 1</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional studio portrait of a Thai corporate employee in business attire with a friendly expression. Soft, warm lighting illuminates their face against a clean, minimal office background with soft bokeh, maintaining a trustworthy and efficient light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLHFY5U4FXQc23ZRSWUE698mo7cYMQ64F7JHgGrhOnMGUtem9AIwJviYg6FxAre_KCOdHbcdUgYd2nY9XfU9x4MfXKGOp2hAR6uwyNWPZUFOxES7-63Mw8BPtbbMtjM2SULYQvLnWCJtq-Ww4NtoR-NIGRlxeYFU2ZYx2X9CwoxvRSFnT8Z7Icxda0bX6spa1e6BjOL2RI2oywBWTQai22BujQTBylDLAC9Cs_s17VYtJyd_PqMigS"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<section class="mt-16 p-stack-lg max-w-5xl mx-auto w-full">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 mb-6 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">home</span>
+<span class="font-caption text-caption">/</span>
+<span class="font-caption text-caption">การจัดการลูกค้า</span>
+<span class="font-caption text-caption">/</span>
+<span class="font-caption text-caption text-secondary font-bold">เพิ่มข้อมูลลูกค้าใหม่</span>
+</div>
+<!-- Page Header -->
+<div class="mb-8">
+<h2 class="font-headline-md text-headline-md text-primary mb-1">เพิ่มข้อมูลลูกค้า</h2>
+<p class="font-body-md text-on-surface-variant">กรุณากรอกรายละเอียดข้อมูลพื้นฐานของลูกค้าให้ครบถ้วนเพื่อประสิทธิภาพในการบริหารจัดการข้อมูล</p>
+</div>
+<!-- Form Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-stack-lg border-b border-outline-variant bg-surface-container-low/50">
+<h3 class="font-title-lg text-title-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">assignment_ind</span>
+                        แบบฟอร์มข้อมูลบุคคล
+                    </h3>
+</div>
+<form class="p-stack-lg space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-lg">
+<!-- Thai National ID -->
+<div class="col-span-1 md:col-span-2">
+<label class="block font-label-md text-label-md mb-2 text-on-surface" for="citizen_id">เลขบัตรประจำตัวประชาชน (13 หลัก)</label>
+<input class="w-full md:w-1/2 p-3 border border-outline-variant rounded-lg form-focus transition-all text-body-md" id="citizen_id" maxlength="13" placeholder="X-XXXX-XXXXX-XX-X" type="text"/>
+<p class="mt-1 text-caption text-on-surface-variant">ระบุตัวเลข 13 หลักโดยไม่ต้องใส่เครื่องหมายขีด</p>
+</div>
+<!-- First Name -->
+<div>
+<label class="block font-label-md text-label-md mb-2 text-on-surface" for="first_name">ชื่อจริง</label>
+<input class="w-full p-3 border border-outline-variant rounded-lg form-focus transition-all text-body-md" id="first_name" placeholder="กรอกชื่อจริงภาษาไทย" type="text"/>
+</div>
+<!-- Last Name -->
+<div>
+<label class="block font-label-md text-label-md mb-2 text-on-surface" for="last_name">นามสกุล</label>
+<input class="w-full p-3 border border-outline-variant rounded-lg form-focus transition-all text-body-md" id="last_name" placeholder="กรอกนามสกุลภาษาไทย" type="text"/>
+</div>
+<!-- Date of Birth -->
+<div class="relative">
+<label class="block font-label-md text-label-md mb-2 text-on-surface" for="dob">วัน/เดือน/ปี เกิด</label>
+<div class="relative">
+<input class="w-full p-3 border border-outline-variant rounded-lg form-focus transition-all text-body-md pr-10" id="dob" type="date"/>
+</div>
+</div>
+<!-- Empty Column for layout balance -->
+<div class="hidden md:block"></div>
+<!-- Address -->
+<div class="col-span-1 md:col-span-2">
+<label class="block font-label-md text-label-md mb-2 text-on-surface" for="address">ที่อยู่ปัจจุบัน</label>
+<textarea class="w-full p-3 border border-outline-variant rounded-lg form-focus transition-all text-body-md resize-none" id="address" placeholder="ระบุบ้านเลขที่, ถนน, แขวง/ตำบล, เขต/อำเภอ, จังหวัด และรหัสไปรษณีย์" rows="4"></textarea>
+</div>
+</div>
+<!-- Visual Divider -->
+<div class="h-px bg-outline-variant w-full my-8"></div>
+<!-- Actions -->
+<div class="flex items-center justify-end gap-stack-md pt-4">
+<button class="px-8 py-3 border-2 border-secondary text-secondary font-label-md rounded-lg hover:bg-surface-container transition-colors active:scale-95" type="button">
+                            ยกเลิก
+                        </button>
+<button class="px-10 py-3 bg-primary text-on-primary font-label-md rounded-lg hover:bg-on-primary-fixed-variant transition-all shadow-md active:scale-95 flex items-center gap-2" type="submit">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+                            บันทึกข้อมูล
+                        </button>
+</div>
+</form>
+</div>
+<!-- Footer Decorative Element -->
+<div class="mt-12 opacity-30 flex justify-center">
+
+</div>
+</section>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+        // Simple input validation for 13 digits
+        document.getElementById('citizen_id').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Form submission prevention for demo
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('บันทึกข้อมูลสำเร็จ (Demo System)');
+        });
+
+        // Soft ripple-like effect on sidebar links
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('mousedown', function(e) {
+                this.classList.add('brightness-90');
+            });
+            link.addEventListener('mouseup', function(e) {
+                this.classList.remove('brightness-90');
+            });
+        });
+    </script>
+</body></html>
