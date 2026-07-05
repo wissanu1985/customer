@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CIM System - ค้นหาและจัดการข้อมูลลูกค้า</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #f8f9ff;
+            margin: 0;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c3c6d1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #737780;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-primary": "#a7c8ff",
+                      "surface": "#f8f9ff",
+                      "tertiary-fixed": "#e0e3e6",
+                      "error": "#ba1a1a",
+                      "surface-tint": "#3a5f94",
+                      "on-error-container": "#93000a",
+                      "primary-container": "#003366",
+                      "secondary-fixed-dim": "#a4c9ff",
+                      "on-surface": "#0b1c30",
+                      "primary-fixed": "#d5e3ff",
+                      "on-primary-container": "#799dd6",
+                      "on-tertiary-container": "#999c9f",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "primary-fixed-dim": "#a7c8ff",
+                      "on-secondary-fixed-variant": "#004883",
+                      "on-secondary-fixed": "#001c39",
+                      "surface-dim": "#cbdbf5",
+                      "outline": "#737780",
+                      "on-tertiary-fixed-variant": "#43474a",
+                      "on-surface-variant": "#43474f",
+                      "inverse-on-surface": "#eaf1ff",
+                      "outline-variant": "#c3c6d1",
+                      "tertiary-fixed-dim": "#c3c7ca",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed": "#d4e3ff",
+                      "secondary": "#0060ac",
+                      "on-tertiary-fixed": "#181c1e",
+                      "surface-bright": "#f8f9ff",
+                      "surface-variant": "#d3e4fe",
+                      "surface-container-high": "#dce9ff",
+                      "primary": "#001e40",
+                      "on-background": "#0b1c30",
+                      "inverse-surface": "#213145",
+                      "surface-container-highest": "#d3e4fe",
+                      "tertiary-container": "#303436",
+                      "secondary-container": "#68abff",
+                      "on-secondary-container": "#003e73",
+                      "on-primary-fixed": "#001b3c",
+                      "error-container": "#ffdad6",
+                      "on-error": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "tertiary": "#1b1f21",
+                      "on-primary-fixed-variant": "#1f477b",
+                      "surface-container": "#e5eeff",
+                      "background": "#f8f9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "stack-md": "12px",
+                      "stack-sm": "4px",
+                      "stack-lg": "24px",
+                      "base": "8px",
+                      "sidebar-width": "260px",
+                      "container-margin": "24px"
+              },
+              "fontFamily": {
+                      "body-md": ["Be Vietnam Pro"],
+                      "headline-lg": ["Be Vietnam Pro"],
+                      "label-md": ["Be Vietnam Pro"],
+                      "body-lg": ["Be Vietnam Pro"],
+                      "title-lg": ["Be Vietnam Pro"],
+                      "headline-md": ["Be Vietnam Pro"],
+                      "caption": ["Be Vietnam Pro"],
+                      "display-lg": ["Be Vietnam Pro"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "title-lg": ["20px", {"lineHeight": "1.5", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "caption": ["12px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                      "display-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Sidebar Navigation Shell -->
+<aside class="docked fixed left-0 top-0 h-full w-sidebar-width bg-primary dark:bg-on-background shadow-lg flex flex-col h-full py-6 space-y-4 z-40">
+<!-- Brand Header -->
+<div class="px-6 mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-on-primary rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="corporate_fare">corporate_fare</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-primary">CIM System</h1>
+<p class="text-primary-fixed-dim text-[10px] uppercase tracking-widest opacity-80">Management Console</p>
+</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 py-3 px-4 text-on-primary-container dark:text-primary-fixed-dim hover:bg-primary-fixed-variant mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">หน้าหลัก</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 text-on-primary-container dark:text-primary-fixed-dim hover:bg-primary-fixed-variant mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+<span class="font-label-md text-label-md">เพิ่มข้อมูลลูกค้า</span>
+</a>
+<!-- Active State: ค้นหาลูกค้า -->
+<a class="flex items-center gap-3 py-3 px-4 bg-secondary-container text-on-secondary-container rounded-lg mx-2 active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="search" style="font-variation-settings: 'FILL' 1;">search</span>
+<span class="font-label-md text-label-md font-bold">ค้นหาลูกค้า</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 text-on-primary-container dark:text-primary-fixed-dim hover:bg-primary-fixed-variant mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-label-md text-label-md">รายงาน</span>
+</a>
+</nav>
+<!-- CTA Action -->
+<div class="px-4 py-2">
+<button class="w-full py-3 bg-secondary text-on-primary rounded-xl flex items-center justify-center gap-2 font-label-md hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                เพิ่มข้อมูลใหม่
+            </button>
+</div>
+<!-- Footer Links -->
+<div class="pt-4 border-t border-on-primary/10">
+<a class="flex items-center gap-3 py-3 px-4 text-on-primary-container dark:text-primary-fixed-dim hover:bg-primary-fixed-variant mx-2 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">ตั้งค่า</span>
+</a>
+<a class="flex items-center gap-3 py-3 px-4 text-on-primary-container dark:text-primary-fixed-dim hover:bg-primary-fixed-variant mx-2 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">ออกจากระบบ</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Shell -->
+<main class="ml-[260px] min-h-screen flex flex-col relative">
+<!-- Top Navigation Bar -->
+<header class="h-16 flex items-center justify-between px-8 bg-surface dark:bg-inverse-surface border-b border-outline-variant sticky top-0 z-30">
+<div class="flex items-center gap-4">
+<h2 class="font-title-lg text-title-lg font-bold text-primary dark:text-inverse-primary">ระบบจัดการข้อมูลลูกค้า</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<div class="h-8 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-3 group cursor-pointer">
+<div class="text-right">
+<p class="text-label-md font-bold text-on-surface">เจ้าหน้าที่สมชาย</p>
+<p class="text-caption text-on-surface-variant">ผู้ดูแลระบบ</p>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-secondary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a Thai government officer in a clean white uniform, looking friendly and confident. The background is a soft blue gradient reflecting a modern office environment. High-quality corporate photography, bright and airy light-mode aesthetic, with sharp focus and professional lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-ykXppovi8pwkiTpE7JdQsg4u24vtNjwuepToY2_Bb5W-Q6u-48bNqDmi8YSq7AFDptUKkv_OI2Rt4tVXY5Sv3TFmVPlhuPuYLncVJFKHJfygY0RZRtZLqFl7YfPiq31a2yp6OCwyyJU4Z05ycS_pNk1S6Uki_Ukl1p2uv-XMDLWKgJHLfV7405zYd8imTg4lw4zte0yIlitRFA-3THvXakK3PX1v7kLGWPD6RokkJ7Gy5h6vU21d"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-8 max-w-7xl w-full mx-auto space-y-8">
+<!-- Page Header & Hero Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2">ค้นหาข้อมูลลูกค้า</h3>
+<p class="font-body-md text-on-surface-variant max-w-xl">ตรวจสอบ แก้ไข และจัดการรายชื่อลูกค้าจากฐานข้อมูลกลางด้วยรหัสบัตรประชาชนหรือชื่อ-นามสกุล</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 rounded-full border-2 border-secondary text-secondary font-bold hover:bg-secondary/5 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+                        ส่งออกไฟล์ Excel
+                    </button>
+</div>
+</div>
+<!-- Search Area with Bento-style Layout -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+<div class="md:col-span-5 space-y-2">
+<label class="text-label-md font-bold text-on-surface ml-1">คำค้นหา (เลขบัตรประชาชน หรือ ชื่อ)</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-secondary transition-colors" data-icon="search">search</span>
+<input class="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-body-md" placeholder="ระบุข้อมูลที่ต้องการค้นหา..." type="text"/>
+</div>
+</div>
+<div class="md:col-span-3 space-y-2">
+<label class="text-label-md font-bold text-on-surface ml-1">ประเภทลูกค้า</label>
+<select class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-body-md appearance-none">
+<option>ทั้งหมด</option>
+<option>ลูกค้าทั่วไป</option>
+<option>ลูกค้านิติบุคคล</option>
+</select>
+</div>
+<div class="md:col-span-2 space-y-2">
+<label class="text-label-md font-bold text-on-surface ml-1">สถานะ</label>
+<select class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all outline-none text-body-md appearance-none">
+<option>ปกติ</option>
+<option>ระงับการใช้งาน</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-125 transition-all">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                            ค้นหาเชิงลึก
+                        </button>
+</div>
+</div>
+</div>
+<!-- Data Table Section -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-container-low/50">
+<h4 class="font-title-lg text-title-lg text-primary">รายการลูกค้าทั้งหมด</h4>
+<span class="text-caption bg-secondary-container px-3 py-1 rounded-full text-on-secondary-container font-bold">พบล่าสุด 1,248 รายการ</span>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-surface-container border-b border-outline-variant text-left">
+<th class="px-6 py-4 font-bold text-on-surface-variant text-label-md uppercase tracking-wider">เลขประจำตัวประชาชน</th>
+<th class="px-6 py-4 font-bold text-on-surface-variant text-label-md uppercase tracking-wider">ชื่อ-นามสกุล</th>
+<th class="px-6 py-4 font-bold text-on-surface-variant text-label-md uppercase tracking-wider">วันเกิด</th>
+<th class="px-6 py-4 font-bold text-on-surface-variant text-label-md uppercase tracking-wider text-center">จัดการ</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors duration-150">
+<td class="px-6 py-4 font-body-md text-on-surface">1-1002-00345-XX-X</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-caption">อก</div>
+<span class="font-body-md font-medium text-on-surface">นาย อมรเทพ เกียรติวรชัย</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">12 พ.ค. 2530 (36 ปี)</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-2 text-secondary hover:bg-secondary/10 rounded-lg transition-colors" title="ดูรายละเอียด">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors" title="แก้ไข">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-2 text-error hover:bg-error/10 rounded-lg transition-colors" title="ลบ">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors duration-150">
+<td class="px-6 py-4 font-body-md text-on-surface">3-7705-00122-XX-X</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-caption">วม</div>
+<span class="font-body-md font-medium text-on-surface">นางสาว วิภาดา มั่นคง</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">04 ก.ย. 2541 (25 ปี)</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-2 text-secondary hover:bg-secondary/10 rounded-lg transition-colors" title="ดูรายละเอียด">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors" title="แก้ไข">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-2 text-error hover:bg-error/10 rounded-lg transition-colors" title="ลบ">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors duration-150">
+<td class="px-6 py-4 font-body-md text-on-surface">1-5509-00041-XX-X</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-caption">ชค</div>
+<span class="font-body-md font-medium text-on-surface">นาย ชัยพล เครือวัลย์</span>
+</div>
+</td>
+<td class="px-6 py-4 font-body-md text-on-surface-variant">25 ธ.ค. 2522 (44 ปี)</td>
+<td class="px-6 py-4">
+<div class="flex items-center justify-center gap-2">
+<button class="p-2 text-secondary hover:bg-secondary/10 rounded-lg transition-colors" title="ดูรายละเอียด">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors" title="แก้ไข">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-2 text-error hover:bg-error/10 rounded-lg transition-colors" title="ลบ">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Area -->
+<div class="p-6 flex flex-col md:flex-row items-center justify-between gap-4 bg-surface-container-low/30 border-t border-outline-variant">
+<p class="text-caption text-on-surface-variant">แสดง 1 ถึง 3 จากทั้งหมด 1,248 รายการ</p>
+<div class="flex items-center gap-1">
+<button class="p-2 hover:bg-surface-container rounded-lg disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined" data-icon="first_page">first_page</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-lg disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<div class="flex px-2">
+<button class="w-10 h-10 flex items-center justify-center bg-secondary text-on-primary rounded-lg font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-container rounded-lg font-medium">2</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-container rounded-lg font-medium">3</button>
+<span class="w-10 h-10 flex items-center justify-center">...</span>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-surface-container rounded-lg font-medium">42</button>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-lg">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-lg">
+<span class="material-symbols-outlined" data-icon="last_page">last_page</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Credits -->
+<footer class="mt-auto py-6 px-8 border-t border-outline-variant flex justify-between items-center text-caption text-on-surface-variant">
+<p>© 2024 CIM System. All Rights Reserved. Thailand Management Platform.</p>
+<div class="flex gap-4">
+<a class="hover:text-secondary" href="#">นโยบายความเป็นส่วนตัว</a>
+<a class="hover:text-secondary" href="#">เงื่อนไขการใช้งาน</a>
+</div>
+</footer>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Placeholder for search logic
+            const searchInput = document.querySelector('input[type="text"]');
+            searchInput.addEventListener('input', (e) => {
+                console.log('Filtering customers for:', e.target.value);
+            });
+
+            // Action button tooltips and effects
+            const actionButtons = document.querySelectorAll('button');
+            actionButtons.forEach(btn => {
+                btn.addEventListener('mousedown', () => {
+                    btn.classList.add('scale-95');
+                });
+                btn.addEventListener('mouseup', () => {
+                    btn.classList.remove('scale-95');
+                });
+                btn.addEventListener('mouseleave', () => {
+                    btn.classList.remove('scale-95');
+                });
+            });
+        });
+    </script>
+</body></html>

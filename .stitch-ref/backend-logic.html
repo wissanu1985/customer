@@ -1,0 +1,84 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace CustomerManagementSystem.Models
+{
+    // Model representing a Customer
+    public class Customer
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "กรุณากรอกเลขบัตรประชาชน")]
+        [StringLength(13, MinimumLength = 13, ErrorMessage = "เลขบัตรประชาชนต้องมี 13 หลัก")]
+        [RegularExpression(@"^\d{13}$", ErrorMessage = "รูปแบบเลขบัตรประชาชนไม่ถูกต้อง")]
+        public string NationalId { get; set; }
+
+        [Required(ErrorMessage = "กรุณากรอกชื่อ-นามสกุล")]
+        public string FullName { get; set; }
+
+        [Required(ErrorMessage = "กรุณาเลือกวันเกิด")]
+        [DataType(DataType.Date)]
+        public DateTime DateOfBirth { get; set; }
+
+        [Required(ErrorMessage = "กรุณากรอกที่อยู่")]
+        public string Address { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; }
+    }
+}
+
+// Example Controller Structure (C# / .NET)
+/*
+namespace CustomerManagementSystem.Controllers
+{
+    public class CustomerController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public CustomerController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Index (Search & List)
+        public IActionResult Index(string searchQuery)
+        {
+            var customers = string.IsNullOrEmpty(searchQuery) 
+                ? _context.Customers.ToList()
+                : _context.Customers.Where(c => c.NationalId.Contains(searchQuery) || c.FullName.Contains(searchQuery)).ToList();
+            
+            return View(customers);
+        }
+
+        // POST: Create
+        [HttpPost]
+        public IActionResult Create(Customer customer)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Customers.Add(customer);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(customer);
+        }
+
+        // POST: Edit
+        [HttpPost]
+        public IActionResult Edit(Customer customer)
+        {
+            if (ModelState.IsValid)
+            {
+                customer.UpdatedAt = DateTime.Now;
+                _context.Update(customer);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(customer);
+        }
+    }
+}
+*/
