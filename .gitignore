@@ -68,8 +68,8 @@ docs/sql/optimize-customer-indexes.sql
 # Superpowers docs (local only)
 docs/superpowers/
 
-# Devin CLI
+# Devin agent config (local only)
 .devin/
 
-# Stitch reference
-.stitch-ref/
+# Stitch reference (local only)
+.stitch-ref
