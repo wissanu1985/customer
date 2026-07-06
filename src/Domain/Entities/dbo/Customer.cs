@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 namespace Domain.Entities;
 
-public  class Citizen : AuditableEntity
+public  class Customer : AuditableEntity
 {
 
-    public string IdCardNumber { get; set; } = null!;
+    public string NationalId { get; set; } = null!;
 
     public string FirstName { get; set; } = null!;
 

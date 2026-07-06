@@ -23,7 +23,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Citizens]",
+         "Name": "[dbo].[Customers]",
          "ObjectType": 0
       }
    ],
