@@ -38,8 +38,7 @@ namespace Infrastructure.Configurations
             entity.Property(e => e.DeletedBy).HasMaxLength(200);
             entity.Property(e => e.EntityId).HasMaxLength(50);
             entity.Property(e => e.EntityType).HasMaxLength(100);
-            entity.Property(e => e.NewValues).HasMaxLength(4000);
-            entity.Property(e => e.OldValues).HasMaxLength(4000);
+            entity.Property(e => e.Values).HasMaxLength(4000);
             entity.Property(e => e.TableName).HasMaxLength(100);
             entity.Property(e => e.Timestamp).HasDefaultValueSql("(getutcdate())");
             entity.Property(e => e.UpdatedBy).HasMaxLength(200);

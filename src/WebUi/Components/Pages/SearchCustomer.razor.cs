@@ -17,6 +17,7 @@ public partial class SearchCustomer
     [Inject] private ScopedMediator Mediator { get; set; } = default!;
     [Inject] private MessageService Message { get; set; } = default!;
     [Inject] private WebUi.Services.ErrorDialogService ErrorDialog { get; set; } = default!;
+    [Inject] private NavigationManager Nav { get; set; } = default!;
 
     // Search filters
     private string nationalId = string.Empty;
@@ -194,6 +195,9 @@ public partial class SearchCustomer
         finally
         {
             loading = false;
+            // Required when SearchAsync is invoked from OnAfterRenderAsync, which has no
+            // auto StateHasChanged after it returns (unlike event handlers like OnSearchClickAsync).
+            await InvokeAsync(StateHasChanged);
         }
     }
 

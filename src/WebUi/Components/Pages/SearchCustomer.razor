@@ -106,9 +106,12 @@
     <PropertyColumn Property="c => c.AddressLine1" Title="ที่อยู่" Ellipsis Width="220" />
     <PropertyColumn Property="c => c.Province" Title="จังหวัด" Width="120" />
     <PropertyColumn Property="c => c.PostalCode" Title="รหัสไปรษณีย์" Width="110" />
-    <ActionColumn Title="จัดการ" Width="120" Fixed="ColumnFixPlacement.Right">
+    <ActionColumn Title="จัดการ" Width="180" Fixed="ColumnFixPlacement.Right">
         <Button Type="@ButtonType.Link" Size="ButtonSize.Small" OnClick="@(() => OpenDetailAsync(context.Id))">
             ดูรายละเอียด
+        </Button>
+        <Button Type="@ButtonType.Link" Size="ButtonSize.Small" OnClick="@(() => Nav.NavigateTo($"/edit-customer/{context.Id}"))">
+            แก้ไข
         </Button>
     </ActionColumn>
 </Table>

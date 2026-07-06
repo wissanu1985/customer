@@ -15,9 +15,9 @@ public  class Audit : AuditableEntity
 
     public string Action { get; set; } = null!;
 
-    public string? OldValues { get; set; }
-
-    public string? NewValues { get; set; }
+    // Snapshot of entity values at modification time.
+    // Timeline is reconstructable via EntityId + TableName + Timestamp.
+    public string? Values { get; set; }
 
     public string? ChangedBy { get; set; }
 

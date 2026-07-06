@@ -63,3 +63,4 @@ nunit-*.xml
 
 # Playwright MCP snapshots
 .playwright-mcp/
+docs/sql/optimize-customer-indexes.sql

@@ -1,7 +1,9 @@
 using Domain.Common;
 using Domain.Repositories;
 using Infrastructure.contexts;
+using Infrastructure.Interceptors;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,11 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+        // Default user provider — override in WebUi with auth-backed implementation.
+        services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+
+        // Audit interceptor is scoped because it depends on ICurrentUserProvider (scoped).
+        services.AddScoped<AuditSaveChangesInterceptor>();
 
         services.AddDbContext<CustomerContext>((serviceProvider, options) =>
         {
@@ -29,6 +36,7 @@ public static class DependencyInjection
                     maxRetryDelay: TimeSpan.FromSeconds(30),
                     errorNumbersToAdd: null);
             });
+            options.AddInterceptors(serviceProvider.GetRequiredService<AuditSaveChangesInterceptor>());
         });
 
         services.AddDbContextFactory<CustomerContext>(options =>
@@ -40,6 +48,9 @@ public static class DependencyInjection
                     maxRetryDelay: TimeSpan.FromSeconds(30),
                     errorNumbersToAdd: null);
             });
+            // DbContextFactory-created contexts do not resolve scoped interceptors from DI;
+            // they use a singleton interceptor instance. Audit for factory contexts is skipped
+            // (factory is used for read-only/seed scenarios). Use the scoped DbContext for audited writes.
         }, ServiceLifetime.Scoped);
 
         services.AddScoped<DbContext>(sp => sp.GetRequiredService<CustomerContext>());
