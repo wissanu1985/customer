@@ -1,9 +1,15 @@
 using Application.Commons.Wrappers;
 using Mediator;
 
-namespace Application.Features.Citizens.Queries.SearchCitizens;
+namespace Application.Features.Customers.Queries.SearchCustomers;
 
 public sealed record Request(
-    string? Keyword,
+    string? NationalId,
+    string? FirstName,
+    string? LastName,
+    string? Province,
+    string? District,
+    string? SubDistrict,
+    string? PostalCode,
     int Page = 1,
-    int Size = 10) : IRequest<Result<IPagedResult<CitizenSearchItem>>>;
+    int Size = 10) : IRequest<Result<IPagedResult<CustomerSearchItem>>>;

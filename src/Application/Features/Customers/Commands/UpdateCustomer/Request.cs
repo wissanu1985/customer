@@ -2,11 +2,11 @@ using Application.Commons.Wrappers;
 using Mediator;
 using System.Text.Json.Serialization;
 
-namespace Application.Features.Citizens.Commands.UpdateCitizen;
+namespace Application.Features.Customers.Commands.UpdateCustomer;
 
 public sealed record Request(
     [property: JsonIgnore] Guid Id,
-    string IdCardNumber,
+    string NationalId,
     string FirstName,
     string LastName,
     DateTime BirthDate,

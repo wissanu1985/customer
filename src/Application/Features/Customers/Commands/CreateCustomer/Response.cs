@@ -1,3 +1,3 @@
-namespace Application.Features.Citizens.Commands.CreateCitizen;
+namespace Application.Features.Customers.Commands.CreateCustomer;
 
 public sealed record Response(Guid Id);

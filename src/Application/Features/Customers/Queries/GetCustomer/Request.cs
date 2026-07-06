@@ -1,6 +1,6 @@
 using Application.Commons.Wrappers;
 using Mediator;
 
-namespace Application.Features.Citizens.Queries.GetCitizen;
+namespace Application.Features.Customers.Queries.GetCustomer;
 
-public sealed record Request(Guid Id) : IRequest<Result<CitizenDetail>>;
+public sealed record Request(Guid Id) : IRequest<Result<CustomerDetail>>;

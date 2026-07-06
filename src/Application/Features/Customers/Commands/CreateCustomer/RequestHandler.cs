@@ -5,30 +5,30 @@ using Domain.Repositories;
 using Mediator;
 using System.Net;
 
-namespace Application.Features.Citizens.Commands.CreateCitizen;
+namespace Application.Features.Customers.Commands.CreateCustomer;
 
 public sealed class RequestHandler : IRequestHandler<Request, Result<Response>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICitizenRepository _citizenRepository;
+    private readonly ICustomerRepository _customerRepository;
 
-    public RequestHandler(IUnitOfWork unitOfWork, ICitizenRepository citizenRepository)
+    public RequestHandler(IUnitOfWork unitOfWork, ICustomerRepository customerRepository)
     {
         _unitOfWork = unitOfWork;
-        _citizenRepository = citizenRepository;
+        _customerRepository = customerRepository;
     }
 
     public async ValueTask<Result<Response>> Handle(Request request, CancellationToken cancellationToken)
     {
         try
         {
-            var exists = await _citizenRepository.ExistsByIdCardAsync(request.IdCardNumber, excludingId: null, cancellationToken);
+            var exists = await _customerRepository.ExistsByNationalIdAsync(request.NationalId, excludingId: null, cancellationToken);
             if (exists)
-                return Result<Response>.Failure("เลขบัตรประชาชนนี้มีอยู่แล้วในระบบ", HttpStatusCode.BadRequest);
+                return Result<Response>.Failure("เลขบัตรประจำตัวนี้มีอยู่แล้วในระบบ", HttpStatusCode.BadRequest);
 
-            var entity = new Citizen()
+            var entity = new Customer()
             {
-                IdCardNumber = request.IdCardNumber,
+                NationalId = request.NationalId,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 BirthDate = request.BirthDate,
@@ -40,14 +40,14 @@ public sealed class RequestHandler : IRequestHandler<Request, Result<Response>>
                 IdCardImage = request.IdCardImage
             };
 
-            await _unitOfWork.Repository<Citizen>().AddAsync(entity, cancellationToken);
+            await _unitOfWork.Repository<Customer>().AddAsync(entity, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result<Response>.Success(new Response(entity.Id), statusCode: HttpStatusCode.Created);
         }
         catch (Exception ex)
         {
-            return Result<Response>.Failure($"Failed to create citizen: {ex.Message}", HttpStatusCode.InternalServerError);
+            return Result<Response>.Failure($"Failed to create customer: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 }

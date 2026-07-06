@@ -1,10 +1,10 @@
 using Application.Commons.Wrappers;
 using Mediator;
 
-namespace Application.Features.Citizens.Commands.CreateCitizen;
+namespace Application.Features.Customers.Commands.CreateCustomer;
 
 public sealed record Request(
-    string IdCardNumber,
+    string NationalId,
     string FirstName,
     string LastName,
     DateTime BirthDate,

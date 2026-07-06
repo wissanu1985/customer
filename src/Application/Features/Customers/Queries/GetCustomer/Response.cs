@@ -1,9 +1,9 @@
-namespace Application.Features.Citizens.Queries.GetCitizen;
+namespace Application.Features.Customers.Queries.GetCustomer;
 
-public sealed class CitizenDetail
+public sealed class CustomerDetail
 {
     public Guid Id { get; set; }
-    public string IdCardNumber { get; set; } = string.Empty;
+    public string NationalId { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateTime BirthDate { get; set; }

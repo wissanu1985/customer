@@ -1,3 +1,3 @@
-namespace Application.Features.Citizens.Commands.UpdateCitizen;
+namespace Application.Features.Customers.Commands.UpdateCustomer;
 
 public sealed record Response(Guid Id);

@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Application.Features.Citizens.Commands.UpdateCitizen;
+namespace Application.Features.Customers.Commands.UpdateCustomer;
 
 public sealed class RequestValidator : AbstractValidator<Request>
 {
@@ -8,10 +8,10 @@ public sealed class RequestValidator : AbstractValidator<Request>
     {
         RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required");
 
-        RuleFor(x => x.IdCardNumber)
-            .NotEmpty().WithMessage("กรุณากรอกเลขบัตรประชาชน")
-            .Length(13).WithMessage("เลขบัตรประชาชนต้องมี 13 หลัก")
-            .Matches(@"^\d{13}$").WithMessage("เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก");
+        RuleFor(x => x.NationalId)
+            .NotEmpty().WithMessage("กรุณากรอกเลขบัตรประจำตัว")
+            .Length(13).WithMessage("เลขบัตรประจำตัวต้องมี 13 หลัก")
+            .Matches(@"^\d{13}$").WithMessage("เลขบัตรประจำตัวต้องเป็นตัวเลข 13 หลัก");
 
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("กรุณากรอกชื่อ")

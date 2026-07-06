@@ -6,54 +6,54 @@ using Mediator;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace Application.Features.Citizens.Commands.UpdateCitizen;
+namespace Application.Features.Customers.Commands.UpdateCustomer;
 
 public sealed class RequestHandler : IRequestHandler<Request, Result<Response>>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICitizenRepository _citizenRepository;
+    private readonly ICustomerRepository _customerRepository;
 
-    public RequestHandler(IUnitOfWork unitOfWork, ICitizenRepository citizenRepository)
+    public RequestHandler(IUnitOfWork unitOfWork, ICustomerRepository customerRepository)
     {
         _unitOfWork = unitOfWork;
-        _citizenRepository = citizenRepository;
+        _customerRepository = customerRepository;
     }
 
     public async ValueTask<Result<Response>> Handle(Request request, CancellationToken cancellationToken)
     {
         try
         {
-            var citizen = await _unitOfWork.Repository<Citizen>().Entities
+            var customer = await _unitOfWork.Repository<Customer>().Entities
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
-            if (citizen is null)
+            if (customer is null)
                 return Result<Response>.Failure("ไม่พบข้อมูลลูกค้า", HttpStatusCode.NotFound);
 
-            var duplicate = await _citizenRepository.ExistsByIdCardAsync(request.IdCardNumber, excludingId: request.Id, cancellationToken);
+            var duplicate = await _customerRepository.ExistsByNationalIdAsync(request.NationalId, excludingId: request.Id, cancellationToken);
             if (duplicate)
-                return Result<Response>.Failure("เลขบัตรประชาชนนี้มีอยู่แล้วในระบบ", HttpStatusCode.BadRequest);
+                return Result<Response>.Failure("เลขบัตรประจำตัวนี้มีอยู่แล้วในระบบ", HttpStatusCode.BadRequest);
 
-            citizen.IdCardNumber = request.IdCardNumber;
-            citizen.FirstName = request.FirstName;
-            citizen.LastName = request.LastName;
-            citizen.BirthDate = request.BirthDate;
-            citizen.AddressLine1 = request.AddressLine1;
-            citizen.SubDistrict = request.SubDistrict;
-            citizen.District = request.District;
-            citizen.Province = request.Province;
-            citizen.PostalCode = request.PostalCode;
-            citizen.IdCardImage = request.IdCardImage;
-            citizen.UpdatedDate = DateTime.UtcNow;
-            citizen.UpdatedBy = "System";
+            customer.NationalId = request.NationalId;
+            customer.FirstName = request.FirstName;
+            customer.LastName = request.LastName;
+            customer.BirthDate = request.BirthDate;
+            customer.AddressLine1 = request.AddressLine1;
+            customer.SubDistrict = request.SubDistrict;
+            customer.District = request.District;
+            customer.Province = request.Province;
+            customer.PostalCode = request.PostalCode;
+            customer.IdCardImage = request.IdCardImage;
+            customer.UpdatedDate = DateTime.UtcNow;
+            customer.UpdatedBy = "System";
 
-            _unitOfWork.Repository<Citizen>().Update(citizen);
+            _unitOfWork.Repository<Customer>().Update(customer);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return Result<Response>.Success(new Response(citizen.Id));
+            return Result<Response>.Success(new Response(customer.Id));
         }
         catch (Exception ex)
         {
-            return Result<Response>.Failure($"Failed to update citizen: {ex.Message}", HttpStatusCode.InternalServerError);
+            return Result<Response>.Failure($"Failed to update customer: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 }

@@ -1,15 +1,15 @@
 using FluentValidation;
 
-namespace Application.Features.Citizens.Commands.CreateCitizen;
+namespace Application.Features.Customers.Commands.CreateCustomer;
 
 public sealed class RequestValidator : AbstractValidator<Request>
 {
     public RequestValidator()
     {
-        RuleFor(x => x.IdCardNumber)
-            .NotEmpty().WithMessage("กรุณากรอกเลขบัตรประชาชน")
-            .Length(13).WithMessage("เลขบัตรประชาชนต้องมี 13 หลัก")
-            .Matches(@"^\d{13}$").WithMessage("เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก");
+        RuleFor(x => x.NationalId)
+            .NotEmpty().WithMessage("กรุณากรอกเลขบัตรประจำตัว")
+            .Length(13).WithMessage("เลขบัตรประจำตัวต้องมี 13 หลัก")
+            .Matches(@"^\d{13}$").WithMessage("เลขบัตรประจำตัวต้องเป็นตัวเลข 13 หลัก");
 
         RuleFor(x => x.FirstName)
             .NotEmpty().WithMessage("กรุณากรอกชื่อ")

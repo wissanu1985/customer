@@ -5,9 +5,9 @@ using Mediator;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace Application.Features.Citizens.Queries.GetCitizen;
+namespace Application.Features.Customers.Queries.GetCustomer;
 
-public sealed class RequestHandler : IRequestHandler<Request, Result<CitizenDetail>>
+public sealed class RequestHandler : IRequestHandler<Request, Result<CustomerDetail>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -16,27 +16,27 @@ public sealed class RequestHandler : IRequestHandler<Request, Result<CitizenDeta
         _unitOfWork = unitOfWork;
     }
 
-    public async ValueTask<Result<CitizenDetail>> Handle(Request request, CancellationToken cancellationToken)
+    public async ValueTask<Result<CustomerDetail>> Handle(Request request, CancellationToken cancellationToken)
     {
-        var citizen = await _unitOfWork.Repository<Citizen>().Entities
+        var customer = await _unitOfWork.Repository<Customer>().Entities
             .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
 
-        if (citizen is null)
-            return Result<CitizenDetail>.Failure("ไม่พบข้อมูลลูกค้า", HttpStatusCode.NotFound);
+        if (customer is null)
+            return Result<CustomerDetail>.Failure("ไม่พบข้อมูลลูกค้า", HttpStatusCode.NotFound);
 
-        return Result<CitizenDetail>.Success(new CitizenDetail
+        return Result<CustomerDetail>.Success(new CustomerDetail
         {
-            Id = citizen.Id,
-            IdCardNumber = citizen.IdCardNumber,
-            FirstName = citizen.FirstName,
-            LastName = citizen.LastName,
-            BirthDate = citizen.BirthDate,
-            AddressLine1 = citizen.AddressLine1,
-            SubDistrict = citizen.SubDistrict,
-            District = citizen.District,
-            Province = citizen.Province,
-            PostalCode = citizen.PostalCode,
-            IdCardImage = citizen.IdCardImage
+            Id = customer.Id,
+            NationalId = customer.NationalId,
+            FirstName = customer.FirstName,
+            LastName = customer.LastName,
+            BirthDate = customer.BirthDate,
+            AddressLine1 = customer.AddressLine1,
+            SubDistrict = customer.SubDistrict,
+            District = customer.District,
+            Province = customer.Province,
+            PostalCode = customer.PostalCode,
+            IdCardImage = customer.IdCardImage
         });
     }
 }

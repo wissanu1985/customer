@@ -5,9 +5,9 @@ using Domain.Entities;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Features.Citizens.Queries.SearchCitizens;
+namespace Application.Features.Customers.Queries.SearchCustomers;
 
-public sealed class RequestHandler : IRequestHandler<Request, Result<IPagedResult<CitizenSearchItem>>>
+public sealed class RequestHandler : IRequestHandler<Request, Result<IPagedResult<CustomerSearchItem>>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -16,34 +16,47 @@ public sealed class RequestHandler : IRequestHandler<Request, Result<IPagedResul
         _unitOfWork = unitOfWork;
     }
 
-    public async ValueTask<Result<IPagedResult<CitizenSearchItem>>> Handle(Request request, CancellationToken cancellationToken)
+    public async ValueTask<Result<IPagedResult<CustomerSearchItem>>> Handle(Request request, CancellationToken cancellationToken)
     {
-        var keyword = request.Keyword?.Trim();
+        var query = _unitOfWork.Repository<Customer>().Entities.AsQueryable();
 
-        var query = _unitOfWork.Repository<Citizen>().Entities;
+        var nationalId = request.NationalId?.Trim();
+        if (!string.IsNullOrWhiteSpace(nationalId))
+            query = query.Where(c => c.NationalId.Contains(nationalId));
 
-        if (!string.IsNullOrWhiteSpace(keyword))
-        {
-            query = query.Where(c =>
-                c.IdCardNumber.Contains(keyword) ||
-                c.FirstName.Contains(keyword) ||
-                c.LastName.Contains(keyword) ||
-                c.AddressLine1.Contains(keyword) ||
-                c.SubDistrict.Contains(keyword) ||
-                c.District.Contains(keyword) ||
-                c.Province.Contains(keyword) ||
-                c.PostalCode.Contains(keyword));
-        }
+        var firstName = request.FirstName?.Trim();
+        if (!string.IsNullOrWhiteSpace(firstName))
+            query = query.Where(c => c.FirstName.Contains(firstName));
+
+        var lastName = request.LastName?.Trim();
+        if (!string.IsNullOrWhiteSpace(lastName))
+            query = query.Where(c => c.LastName.Contains(lastName));
+
+        var province = request.Province?.Trim();
+        if (!string.IsNullOrWhiteSpace(province))
+            query = query.Where(c => c.Province == province);
+
+        var district = request.District?.Trim();
+        if (!string.IsNullOrWhiteSpace(district))
+            query = query.Where(c => c.District == district);
+
+        var subDistrict = request.SubDistrict?.Trim();
+        if (!string.IsNullOrWhiteSpace(subDistrict))
+            query = query.Where(c => c.SubDistrict == subDistrict);
+
+        var postalCode = request.PostalCode?.Trim();
+        if (!string.IsNullOrWhiteSpace(postalCode))
+            query = query.Where(c => c.PostalCode == postalCode);
 
         var paged = await query
             .OrderByDescending(c => c.CreatedDate)
             .ToPagedResultAsync(request.Page, request.Size, cancellationToken);
 
         var items = paged.Data
-            .Select(c => new CitizenSearchItem
+            .Select(c => new CustomerSearchItem
             {
                 Id = c.Id,
-                IdCardNumber = c.IdCardNumber,
+                NationalId = c.NationalId,
                 FirstName = c.FirstName,
                 LastName = c.LastName,
                 BirthDate = c.BirthDate,
@@ -55,7 +68,7 @@ public sealed class RequestHandler : IRequestHandler<Request, Result<IPagedResul
             })
             .ToList();
 
-        var result = PagedResult<CitizenSearchItem>.Success(items, paged.Page, paged.Size, paged.Total);
-        return Result<IPagedResult<CitizenSearchItem>>.Success(result);
+        var result = PagedResult<CustomerSearchItem>.Success(items, paged.Page, paged.Size, paged.Total);
+        return Result<IPagedResult<CustomerSearchItem>>.Success(result);
     }
 }
