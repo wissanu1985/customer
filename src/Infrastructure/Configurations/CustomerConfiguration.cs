@@ -9,13 +9,13 @@ using System.Collections.Generic;
 
 namespace Infrastructure.Configurations
 {
-    public partial class CitizenConfiguration : IEntityTypeConfiguration<Citizen>
+    public partial class CustomerConfiguration : IEntityTypeConfiguration<Customer>
     {
-        public void Configure(EntityTypeBuilder<Citizen> entity)
+        public void Configure(EntityTypeBuilder<Customer> entity)
         {
-            entity.HasKey(e => e.Id).HasName("PK__Citizens__3214EC07FC6943F7");
+            entity.HasKey(e => e.Id).HasName("PK__Customers__3214EC07FC6943F7");
 
-            entity.HasIndex(e => e.IdCardNumber, "UX_Citizens_IdCardNumber").IsUnique();
+            entity.HasIndex(e => e.NationalId, "UX_Customers_NationalId").IsUnique();
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.AddressLine1).HasMaxLength(300);
@@ -27,7 +27,7 @@ namespace Infrastructure.Configurations
             entity.Property(e => e.DeletedBy).HasMaxLength(100);
             entity.Property(e => e.FirstName).HasMaxLength(100);
             entity.Property(e => e.LastName).HasMaxLength(100);
-            entity.Property(e => e.IdCardNumber).HasMaxLength(13);
+            entity.Property(e => e.NationalId).HasMaxLength(13);
             entity.Property(e => e.SubDistrict).HasMaxLength(100);
             entity.Property(e => e.District).HasMaxLength(100);
             entity.Property(e => e.Province).HasMaxLength(100);
@@ -37,6 +37,6 @@ namespace Infrastructure.Configurations
             OnConfigurePartial(entity);
         }
 
-        partial void OnConfigurePartial(EntityTypeBuilder<Citizen> entity);
+        partial void OnConfigurePartial(EntityTypeBuilder<Customer> entity);
     }
 }

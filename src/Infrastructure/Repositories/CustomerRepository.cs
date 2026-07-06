@@ -6,20 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public sealed class CitizenRepository : BaseRepository<Citizen>, ICitizenRepository
+public sealed class CustomerRepository : BaseRepository<Customer>, ICustomerRepository
 {
-    public CitizenRepository(CitizenContext context) : base(context) { }
+    public CustomerRepository(CustomerContext context) : base(context) { }
 
-    public Task<bool> ExistsByIdCardAsync(string idCardNumber, Guid? excludingId, CancellationToken cancellationToken = default)
+    public Task<bool> ExistsByNationalIdAsync(string nationalId, Guid? excludingId, CancellationToken cancellationToken = default)
     {
         return Entities
-            .Where(c => c.IdCardNumber == idCardNumber)
+            .Where(c => c.NationalId == nationalId)
             .Where(c => excludingId == null || c.Id != excludingId)
             .AnyAsync(cancellationToken);
     }
 
-    public Task<Citizen?> GetByIdCardAsync(string idCardNumber, CancellationToken cancellationToken = default)
+    public Task<Customer?> GetByNationalIdAsync(string nationalId, CancellationToken cancellationToken = default)
     {
-        return Entities.FirstOrDefaultAsync(c => c.IdCardNumber == idCardNumber, cancellationToken);
+        return Entities.FirstOrDefaultAsync(c => c.NationalId == nationalId, cancellationToken);
     }
 }

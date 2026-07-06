@@ -8,16 +8,16 @@ using System.Collections.Generic;
 
 namespace Infrastructure.contexts;
 
-public partial class CitizenContext : DbContext
+public partial class CustomerContext : DbContext
 {
-    public CitizenContext(DbContextOptions<CitizenContext> options)
+    public CustomerContext(DbContextOptions<CustomerContext> options)
         : base(options)
     {
     }
 
     public virtual DbSet<Audit> Audits { get; set; }
 
-    public virtual DbSet<Citizen> Citizens { get; set; }
+    public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<Province> Provinces { get; set; }
 
@@ -28,7 +28,7 @@ public partial class CitizenContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new Infrastructure.Configurations.AuditConfiguration());
-        modelBuilder.ApplyConfiguration(new Infrastructure.Configurations.CitizenConfiguration());
+        modelBuilder.ApplyConfiguration(new Infrastructure.Configurations.CustomerConfiguration());
         modelBuilder.ApplyConfiguration(new Infrastructure.Configurations.ProvinceConfiguration());
         modelBuilder.ApplyConfiguration(new Infrastructure.Configurations.DistrictConfiguration());
         modelBuilder.ApplyConfiguration(new Infrastructure.Configurations.SubDistrictConfiguration());

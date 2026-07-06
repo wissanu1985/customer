@@ -6,12 +6,12 @@ namespace Infrastructure.Repositories;
 
 public sealed class ReadOnlyUnitOfWork : IReadOnlyUnitOfWork
 {
-    private readonly IDbContextFactory<CitizenContext> _factory;
-    private readonly List<CitizenContext> _contexts = new();
+    private readonly IDbContextFactory<CustomerContext> _factory;
+    private readonly List<CustomerContext> _contexts = new();
     private readonly Dictionary<Type, object> _repositories = new();
     private bool _disposed;
 
-    public ReadOnlyUnitOfWork(IDbContextFactory<CitizenContext> factory)
+    public ReadOnlyUnitOfWork(IDbContextFactory<CustomerContext> factory)
     {
         _factory = factory;
     }

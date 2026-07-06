@@ -6,9 +6,9 @@ namespace Infrastructure.Repositories;
 
 public sealed class ReadOnlyRepository<T> : IReadOnlyRepository<T> where T : class
 {
-    private readonly CitizenContext _context;
+    private readonly CustomerContext _context;
 
-    public ReadOnlyRepository(CitizenContext context)
+    public ReadOnlyRepository(CustomerContext context)
     {
         _context = context;
     }

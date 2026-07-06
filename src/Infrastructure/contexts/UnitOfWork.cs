@@ -8,11 +8,11 @@ namespace Infrastructure.contexts;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly CitizenContext _context;
+    private readonly CustomerContext _context;
     private IAuditRepository? _audits;
     private readonly Dictionary<Type, object> _repositories = new();
 
-    public UnitOfWork(CitizenContext context)
+    public UnitOfWork(CustomerContext context)
     {
         _context = context;
     }
