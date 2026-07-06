@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คู่มือการใช้งาน – ระบบจัดการข้อมูลลูกค้า</title>
+  <style>
+    :root {
+      --primary: #1677ff;
+      --primary-light: #e6f4ff;
+      --success: #52c41a;
+      --warning: #faad14;
+      --danger: #ff4d4f;
+      --border: #d9d9d9;
+      --text: #333;
+      --text-secondary: #666;
+      --bg: #f5f5f5;
+      --white: #fff;
+      --shadow: 0 2px 8px rgba(0,0,0,.08);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Sidebar ── */
+    .layout { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 260px;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      background: var(--primary);
+      color: #fff;
+      padding: 20px 16px 16px;
+    }
+    .sidebar-header h2 { font-size: 15px; font-weight: 600; }
+    .sidebar-header p  { font-size: 12px; opacity: .8; margin-top: 4px; }
+
+    .sidebar nav ul { list-style: none; padding: 12px 0; }
+    .sidebar nav li a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      font-size: 14px;
+      color: var(--text);
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .sidebar nav li a:hover { background: var(--primary-light); color: var(--primary); }
+    .sidebar nav li a .num {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 12px 20px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Main ── */
+    .main { flex: 1; padding: 0 0 60px; overflow-x: hidden; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+      color: #fff;
+      padding: 48px 48px 40px;
+    }
+    .hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .hero p  { font-size: 15px; opacity: .9; max-width: 600px; }
+    .hero .badges { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .badge {
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Flow diagram */
+    .flow {
+      background: var(--white);
+      margin: 32px 48px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 28px 32px;
+      box-shadow: var(--shadow);
+    }
+    .flow h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--primary); }
+    .flow-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+    .flow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 140px;
+    }
+    .flow-step .icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      border: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .flow-step .label { font-size: 13px; font-weight: 600; color: var(--primary); }
+    .flow-step .desc  { font-size: 11px; color: var(--text-secondary); text-align: center; max-width: 120px; }
+    .flow-arrow {
+      font-size: 22px;
+      color: var(--primary);
+      margin: 0 4px;
+      padding-bottom: 30px;
+    }
+
+    /* Section */
+    .section { margin: 32px 48px; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--primary);
+    }
+    .section-header .num {
+      background: var(--primary);
+      color: #fff;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 20px; font-weight: 700; }
+    .section-header .path {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-family: monospace;
+    }
+
+    /* Card */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .card-title {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+    .card-body { padding: 20px; }
+
+    /* Screenshot */
+    .screenshot-wrap {
+      text-align: center;
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid var(--border);
+    }
+    .screenshot-wrap img {
+      max-width: 100%;
+      border-radius: 4px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      border: 1px solid var(--border);
+    }
+    .screenshot-caption {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* Step list */
+    .steps { counter-reset: step; }
+    .step-item {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+    .step-num {
+      background: var(--primary);
+      color: #fff;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-content { flex: 1; }
+    .step-content strong { display: block; font-size: 14px; margin-bottom: 3px; }
+    .step-content p { font-size: 13px; color: var(--text-secondary); }
+
+    /* Field table */
+    .field-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .field-table th {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+      padding: 10px 14px;
+      text-align: left;
+      border: 1px solid #bae0ff;
+    }
+    .field-table td {
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .field-table tr:nth-child(even) td { background: #fafafa; }
+    .req   { color: var(--danger); font-weight: 700; }
+    .opt   { color: var(--text-secondary); }
+    .auto  { color: var(--success); font-style: italic; }
+    .ro    { color: var(--warning); }
+
+    /* Alert box */
+    .alert {
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .alert-info    { background: var(--primary-light); border: 1px solid #91caff; color: #003eb3; }
+    .alert-success { background: #f6ffed; border: 1px solid #b7eb8f; color: #135200; }
+    .alert-warning { background: #fffbe6; border: 1px solid #ffe58f; color: #614700; }
+    .alert-danger  { background: #fff2f0; border: 1px solid #ffccc7; color: #820014; }
+    .alert-icon { font-size: 16px; margin-top: 1px; }
+
+    /* Button label */
+    .btn-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 4px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-default { background: var(--white); color: var(--text); border-color: var(--border); }
+    .btn-link    { background: transparent; color: var(--primary); border-color: transparent; text-decoration: underline; }
+    .btn-danger  { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+    /* Tag */
+    .tag {
+      display: inline-block;
+      border-radius: 3px;
+      padding: 1px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+    .tag-req  { background: #fff1f0; color: var(--danger); border: 1px solid #ffccc7; }
+    .tag-auto { background: #f6ffed; color: var(--success); border: 1px solid #b7eb8f; }
+    .tag-ro   { background: #fffbe6; color: var(--warning); border: 1px solid #ffe58f; }
+
+    /* Two-col */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* Callout */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-light);
+      padding: 12px 16px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    /* Divider */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+    /* Footer */
+    .doc-footer {
+      text-align: center;
+      padding: 32px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+      background: var(--white);
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ══════════════════ SIDEBAR ══════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>คู่มือการใช้งาน</h2>
+      <p>ระบบจัดการข้อมูลลูกค้า</p>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#overview"><span class="num">●</span> ภาพรวมระบบ</a></li>
+        <li><a href="#add"><span class="num">1</span> เพิ่มลูกค้า</a></li>
+        <li><a href="#search"><span class="num">2</span> ค้นหาลูกค้า</a></li>
+        <li><a href="#detail"><span class="num">3</span> ดูรายละเอียด</a></li>
+        <li><a href="#edit"><span class="num">4</span> แก้ไขข้อมูล</a></li>
+        <li><a href="#tips"><span class="num">✦</span> เคล็ดลับการใช้งาน</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      เวอร์ชันเอกสาร 1.0 · 2026
+    </div>
+  </aside>
+
+  <!-- ══════════════════ MAIN ══════════════════ -->
+  <main class="main">
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1>📋 คู่มือการใช้งานระบบจัดการข้อมูลลูกค้า</h1>
+      <p>อธิบายวิธีการใช้งานแต่ละ Module ตั้งแต่การเพิ่มลูกค้าใหม่ ค้นหา ดูรายละเอียด จนถึงการแก้ไขข้อมูล</p>
+      <div class="badges">
+        <span class="badge">🔵 Blazor Server</span>
+        <span class="badge">🎨 Ant Design Blazor</span>
+        <span class="badge">🗺️ ที่อยู่อัตโนมัติ</span>
+        <span class="badge">📄 3 Module</span>
+      </div>
+    </div>
+
+    <!-- ── Flow ── -->
+    <div id="overview" class="flow">
+      <h2>⚡ ขั้นตอนการทำงานของระบบ (User Flow)</h2>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="icon">➕</div>
+          <div class="label">เพิ่มลูกค้า</div>
+          <div class="desc">กรอกข้อมูล&nbsp;+ บันทึก</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">🔍</div>
+          <div class="label">ค้นหา</div>
+          <div class="desc">กรองด้วยหลายเงื่อนไข</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">📄</div>
+          <div class="label">ดูรายละเอียด</div>
+          <div class="desc">Drawer สรุปข้อมูล</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="icon">✏️</div>
+          <div class="label">แก้ไขข้อมูล</div>
+          <div class="desc">อัปเดต&nbsp;+ บันทึก</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+         MODULE 1 – เพิ่มลูกค้า
+    ════════════════════════════════════════════ -->
+    <div id="add" class="section">
+      <div class="section-header">
+        <div class="num">1</div>
+        <h2>เพิ่มลูกค้าใหม่</h2>
+        <span class="path">/add-customer</span>
+      </div>
+
+      <!-- Screenshot -->
+      <div class="card">
+        <div class="card-title">📸 หน้าจอ – เพิ่มลูกค้า</div>
+        <div class="card-body">
+          <div class="screenshot-wrap">
+            <img src="screenshots/01_add_customer.png" alt="หน้าจอเพิ่มลูกค้า" />
+            <div class="screenshot-caption">รูปที่ 1 – หน้าจอฟอร์มเพิ่มลูกค้าใหม่</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Steps -->
+        <div class="card">
+          <div class="card-title">📋 ขั้นตอนการใช้งาน</div>
+          <div class="card-body">
+            <div class="steps">
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <strong>กรอกเลขบัตรประจำตัว</strong>
+                  <p>พิมพ์เลขบัตร 13 หลัก (ตัวเลขเท่านั้น)</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <strong>กรอกชื่อและนามสกุล</strong>
+                  <p>ชื่อ-นามสกุลแยกช่องกัน อยู่แถวเดียวกัน</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <strong>เลือกวันเกิด</strong>
+                  <p>คลิก DatePicker เพื่อเลือกวัน/เดือน/ปี<br/>วันในอนาคตจะถูก disable ไว้</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                  <strong>กรอกที่อยู่</strong>
+                  <p>บ้านเลขที่ ถนน ซอย ในช่อง TextArea</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                  <strong>เลือกจังหวัด → อำเภอ/เขต → ตำบล/แขวง</strong>
+                  <p>เลือกตามลำดับ โดยแต่ละ Dropdown จะ enable เมื่อเลือกอันก่อนหน้าแล้ว</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">6</div>
+                <div class="step-content">
+                  <strong>รหัสไปรษณีย์ – กรอกอัตโนมัติ</strong>
+                  <p>ระบบจะเติมรหัสไปรษณีย์ให้อัตโนมัติเมื่อเลือกตำบล/แขวงแล้ว</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">7</div>
+                <div class="step-content">
+                  <strong>กด "บันทึก"</strong>
+                  <p>ระบบจะตรวจสอบข้อมูลแล้วบันทึก หากมีข้อผิดพลาดจะแสดงข้อความใต้ฟิลด์</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Field reference -->
+        <div>
+          <div class="card">
+            <div class="card-title">📝 รายละเอียดฟิลด์</div>
+            <div class="card-body" style="padding:0">
+              <table class="field-table">
+                <thead>
+                  <tr>
+                    <th>ฟิลด์</th>
+                    <th>ประเภท</th>
+                    <th>หมายเหตุ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>เลขบัตรประจำตัว</td>
+                    <td>Input (max 13)</td>
+                    <td><span class="req">* จำเป็น</span></td>
+                  </tr>
+                  <tr>
+                    <td>ชื่อ</td>
+                    <td>Input</td>
+                    <td><span class="req">* จำเป็น</span></td>
+                  </tr>
+                  <tr>
+                    <td>นามสกุล</td>
+                    <td>Input</td>
+                    <td><span class="req">* จำเป็น</span></td>
+                  </tr>
+                  <tr>
+                    <td>วันเกิด</td>
+                    <td>DatePicker</td>
+                    <td><span class="req">* จำเป็น</span>, ≤ วันนี้</td>
+                  </tr>
+                  <tr>
+                    <td>ที่อยู่</td>
+                    <td>TextArea</td>
+                    <td><span class="opt">ไม่บังคับ</span></td>
+                  </tr>
+                  <tr>
+                    <td>จังหวัด</td>
+                    <td>Select</td>
+                    <td><span class="req">* จำเป็น</span></td>
+                  </tr>
+                  <tr>
+                    <td>อำเภอ/เขต</td>
+                    <td>Select</td>
+                    <td>enable หลังเลือกจังหวัด</td>
+                  </tr>
+                  <tr>
+                    <td>ตำบล/แขวง</td>
+                    <td>Select</td>
+                    <td>enable หลังเลือกอำเภอ</td>
+                  </tr>
+                  <tr>
+                    <td>รหัสไปรษณีย์</td>
+                    <td>Input (ReadOnly)</td>
+                    <td><span class="auto">✔ เติมอัตโนมัติ</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">🔘 ปุ่มบนหน้าจอ</div>
+            <div class="card-body">
+              <p style="margin-bottom:10px">
+                <span class="btn-label btn-primary">💾 บันทึก</span>
+                &nbsp;ส่งข้อมูล ตรวจสอบ Validation แล้วบันทึก
+              </p>
+              <p>
+                <span class="btn-label btn-default">🗑 ล้างฟอร์ม</span>
+                &nbsp;ล้างข้อมูลทั้งหมดในฟอร์มกลับเป็นค่าว่าง
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        <span class="alert-icon">💡</span>
+        <div>ระบบจะแสดง Spin (โหลด) บน Dropdown จังหวัดขณะดึงข้อมูล ให้รอจนโหลดเสร็จก่อนเลือก</div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ════════════════════════════════════════════
+         MODULE 2 – ค้นหาลูกค้า
+    ════════════════════════════════════════════ -->
+    <div id="search" class="section">
+      <div class="section-header">
+        <div class="num">2</div>
+        <h2>ค้นหาลูกค้า</h2>
+        <span class="path">/search-customer</span>
+      </div>
+
+      <!-- Screenshot before search -->
+      <div class="card">
+        <div class="card-title">📸 หน้าจอ – แบบฟอร์มค้นหา</div>
+        <div class="card-body">
+          <div class="screenshot-wrap">
+            <img src="screenshots/02_search_customer_empty.png" alt="หน้าค้นหา" />
+            <div class="screenshot-caption">รูปที่ 2 – หน้าค้นหา พร้อมตารางผลลัพธ์ (โหลดอัตโนมัติเมื่อเข้าหน้า)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screenshot results -->
+      <div class="card">
+        <div class="card-title">📸 หน้าจอ – ผลลัพธ์การค้นหา</div>
+        <div class="card-body">
+          <div class="screenshot-wrap">
+            <img src="screenshots/03_search_customer_results.png" alt="ผลลัพธ์ค้นหา" />
+            <div class="screenshot-caption">รูปที่ 3 – ตารางแสดงผลลัพธ์ลูกค้าทั้งหมด พร้อมปุ่มจัดการแต่ละแถว</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <!-- Steps -->
+        <div class="card">
+          <div class="card-title">📋 ขั้นตอนการใช้งาน</div>
+          <div class="card-body">
+            <div class="steps">
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <strong>เข้าหน้าค้นหา</strong>
+                  <p>ระบบจะโหลดรายชื่อลูกค้าทั้งหมดมาแสดงในตารางโดยอัตโนมัติ</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <strong>ระบุเงื่อนไขการค้นหา (ไม่บังคับ)</strong>
+                  <p>สามารถกรองได้ทีละหลายเงื่อนไขพร้อมกัน:
+                    เลขบัตร, ชื่อ, นามสกุล, จังหวัด, อำเภอ/เขต, ตำบล/แขวง, รหัสไปรษณีย์</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <strong>กด <span class="btn-label btn-primary">ค้นหา</span></strong>
+                  <p>ตารางจะอัปเดตผลลัพธ์ตามเงื่อนไขที่กรอก</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                  <strong>เลื่อน Pagination</strong>
+                  <p>หากผลลัพธ์มีหลายหน้า ใช้ปุ่ม ‹ / › เพื่อเปลี่ยนหน้า</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                  <strong>กด <span class="btn-label btn-default">ล้าง</span> เพื่อรีเซ็ต</strong>
+                  <p>ล้างเงื่อนไขทั้งหมดและโหลดข้อมูลใหม่</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter fields -->
+        <div>
+          <div class="card">
+            <div class="card-title">🔎 เงื่อนไขการกรอง</div>
+            <div class="card-body" style="padding:0">
+              <table class="field-table">
+                <thead>
+                  <tr><th>ช่อง</th><th>รูปแบบ</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>เลขบัตรประจำตัว</td><td>ค้นแบบ Exact / Partial</td></tr>
+                  <tr><td>ชื่อ</td><td>ค้นแบบ Partial</td></tr>
+                  <tr><td>นามสกุล</td><td>ค้นแบบ Partial</td></tr>
+                  <tr><td>จังหวัด</td><td>Select Dropdown</td></tr>
+                  <tr><td>อำเภอ/เขต</td><td>Select (enable หลังเลือกจังหวัด)</td></tr>
+                  <tr><td>ตำบล/แขวง</td><td>Select (enable หลังเลือกอำเภอ)</td></tr>
+                  <tr><td>รหัสไปรษณีย์</td><td>Input (disable เมื่อเลือกตำบลแล้ว)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📊 คอลัมน์ในตารางผลลัพธ์</div>
+            <div class="card-body" style="padding:0">
+              <table class="field-table">
+                <thead>
+                  <tr><th>คอลัมน์</th><th>ความกว้าง</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>เลขบัตรประจำตัว</td><td>160 px</td></tr>
+                  <tr><td>ชื่อ-นามสกุล</td><td>180 px</td></tr>
+                  <tr><td>วันเกิด (dd/MM/yyyy)</td><td>120 px</td></tr>
+                  <tr><td>ที่อยู่ (ตัดข้อความ)</td><td>220 px</td></tr>
+                  <tr><td>จังหวัด</td><td>120 px</td></tr>
+                  <tr><td>รหัสไปรษณีย์</td><td>110 px</td></tr>
+                  <tr><td>จัดการ (Fixed Right)</td><td>180 px</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning">
+        <span class="alert-icon">⚠️</span>
+        <div>รหัสไปรษณีย์จะถูก disable อัตโนมัติเมื่อเลือกตำบล/แขวงแล้ว เพื่อป้องกันข้อมูลขัดแย้งกัน</div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ════════════════════════════════════════════
+         MODULE 3 – ดูรายละเอียด (Drawer)
+    ════════════════════════════════════════════ -->
+    <div id="detail" class="section">
+      <div class="section-header">
+        <div class="num">3</div>
+        <h2>ดูรายละเอียดลูกค้า (Drawer)</h2>
+        <span class="path">/search-customer → ดูรายละเอียด</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📸 หน้าจอ – Drawer รายละเอียด</div>
+        <div class="card-body">
+          <div class="screenshot-wrap">
+            <img src="screenshots/04_search_customer_drawer.png" alt="Drawer รายละเอียด" />
+            <div class="screenshot-caption">รูปที่ 4 – Drawer สรุปข้อมูลลูกค้าแสดงจากทางขวา ไม่ออกจากหน้าค้นหา</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📋 ขั้นตอนการใช้งาน</div>
+          <div class="card-body">
+            <div class="steps">
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <strong>กด <span class="btn-label btn-link">ดูรายละเอียด</span> ในคอลัมน์จัดการ</strong>
+                  <p>ปุ่มอยู่ด้านขวาสุดของแต่ละแถวในตาราง</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <strong>Drawer สไลด์จากขวา</strong>
+                  <p>แสดงแถบ Loading (Spin) ขณะดึงข้อมูล จากนั้นแสดงข้อมูลในรูปแบบ Descriptions</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <strong>ปิด Drawer</strong>
+                  <p>กดปุ่ม ✕ บนมุมขวาบนของ Drawer หรือคลิกพื้นที่นอก Drawer</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📄 ข้อมูลที่แสดงใน Drawer</div>
+          <div class="card-body" style="padding:0">
+            <table class="field-table">
+              <thead>
+                <tr><th>#</th><th>หัวข้อ</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>เลขบัตรประจำตัว</td></tr>
+                <tr><td>2</td><td>ชื่อ</td></tr>
+                <tr><td>3</td><td>นามสกุล</td></tr>
+                <tr><td>4</td><td>วันเกิด (dd/MM/yyyy)</td></tr>
+                <tr><td>5</td><td>ที่อยู่</td></tr>
+                <tr><td>6</td><td>ตำบล/แขวง</td></tr>
+                <tr><td>7</td><td>อำเภอ/เขต</td></tr>
+                <tr><td>8</td><td>จังหวัด</td></tr>
+                <tr><td>9</td><td>รหัสไปรษณีย์</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        <span class="alert-icon">💡</span>
+        <div>Drawer ไม่นำทางออกจากหน้าค้นหา ทำให้สามารถดูข้อมูลหลาย record ได้โดยไม่ต้องกลับไปค้นหาใหม่</div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ════════════════════════════════════════════
+         MODULE 4 – แก้ไขข้อมูลลูกค้า
+    ════════════════════════════════════════════ -->
+    <div id="edit" class="section">
+      <div class="section-header">
+        <div class="num">4</div>
+        <h2>แก้ไขข้อมูลลูกค้า</h2>
+        <span class="path">/edit-customer/{id}</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📸 หน้าจอ – แก้ไขข้อมูลลูกค้า</div>
+        <div class="card-body">
+          <div class="screenshot-wrap">
+            <img src="screenshots/05_edit_customer.png" alt="แก้ไขลูกค้า" />
+            <div class="screenshot-caption">รูปที่ 5 – ฟอร์มแก้ไขข้อมูลลูกค้า โหลดข้อมูลเดิมมาให้อัตโนมัติ</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📋 ขั้นตอนการใช้งาน</div>
+          <div class="card-body">
+            <div class="steps">
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <strong>กด <span class="btn-label btn-link">แก้ไข</span> จากตารางค้นหา</strong>
+                  <p>ระบบจะนำทางไปยังหน้า /edit-customer/{id} พร้อมโหลด Spin ก่อน</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <strong>ฟอร์มแสดงข้อมูลเดิมครบ</strong>
+                  <p>ทุกฟิลด์จะถูกเติมด้วยข้อมูลที่บันทึกไว้</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <strong>แก้ไขข้อมูลที่ต้องการ</strong>
+                  <p>แก้ไขได้ทุกฟิลด์ (ยกเว้นรหัสไปรษณีย์ที่เป็น ReadOnly)</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                  <strong>กด <span class="btn-label btn-primary">บันทึกการแก้ไข</span></strong>
+                  <p>ระบบตรวจสอบ Validation และบันทึกข้อมูลที่แก้ไข</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                  <strong>หรือกด <span class="btn-label btn-default">ยกเลิก</span></strong>
+                  <p>กลับไปหน้าก่อนหน้าโดยไม่บันทึกการเปลี่ยนแปลง</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">⚠️ กรณีไม่พบข้อมูล (Error State)</div>
+            <div class="card-body">
+              <div class="callout">
+                หาก ID ที่ระบุใน URL ไม่ตรงกับข้อมูลในระบบ จะแสดง
+                <strong>Alert สีแดง</strong> พร้อมปุ่ม <span class="btn-label btn-default">กลับ</span>
+                ให้กดกลับไปหน้าก่อนหน้าได้ทันที
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">🔘 ปุ่มบนหน้าจอ</div>
+            <div class="card-body">
+              <p style="margin-bottom:10px">
+                <span class="btn-label btn-primary">💾 บันทึกการแก้ไข</span>
+                &nbsp;ส่งข้อมูลที่แก้ไขแล้วบันทึก
+              </p>
+              <p>
+                <span class="btn-label btn-default">↩ ยกเลิก</span>
+                &nbsp;กลับหน้าก่อนหน้าโดยไม่บันทึก
+              </p>
+            </div>
+          </div>
+
+          <div class="alert alert-success">
+            <span class="alert-icon">✅</span>
+            <div>ฟอร์มแก้ไขใช้โครงสร้างเดียวกับฟอร์มเพิ่มลูกค้า ทำให้ใช้งานได้คุ้นเคย</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ════════════════════════════════════════════
+         TIPS
+    ════════════════════════════════════════════ -->
+    <div id="tips" class="section">
+      <div class="section-header">
+        <div class="num">✦</div>
+        <h2>เคล็ดลับการใช้งาน</h2>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">💡 ที่อยู่อัตโนมัติ</div>
+          <div class="card-body">
+            <div class="steps">
+              <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                  <strong>เลือกจังหวัดก่อนเสมอ</strong>
+                  <p>Dropdown อำเภอ/เขต จะ enable หลังเลือกจังหวัด</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                  <strong>เลือกอำเภอ/เขต</strong>
+                  <p>Dropdown ตำบล/แขวง จะ enable ให้เลือกต่อ</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                  <strong>เลือกตำบล/แขวง → รหัสไปรษณีย์กรอกให้เอง</strong>
+                  <p>ไม่ต้องพิมพ์รหัสไปรษณีย์เอง ระบบเติมให้อัตโนมัติ</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔍 เทคนิคการค้นหาให้เร็ว</div>
+          <div class="card-body">
+            <div class="steps">
+              <div class="step-item">
+                <div class="step-num">✦</div>
+                <div class="step-content">
+                  <strong>ค้นหาด้วยชื่อบางส่วน</strong>
+                  <p>ไม่จำเป็นต้องกรอกชื่อเต็ม เช่น "ทดสอบ" จะพบทุก record ที่มีคำนี้</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">✦</div>
+                <div class="step-content">
+                  <strong>กรองด้วยจังหวัดเดียว</strong>
+                  <p>เลือกแค่จังหวัดโดยไม่ต้องเลือกอำเภอ/ตำบล ก็ได้ผลลัพธ์รายจังหวัด</p>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-num">✦</div>
+                <div class="step-content">
+                  <strong>กด "ล้าง" เพื่อรีเซ็ตทันที</strong>
+                  <p>ไม่ต้องลบทีละช่อง กด "ล้าง" ครั้งเดียวเพื่อล้างทุกเงื่อนไข</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="card">
+        <div class="card-title">🏷️ ตำนานสี &amp; สัญลักษณ์</div>
+        <div class="card-body">
+          <div style="display:flex; flex-wrap:wrap; gap:16px; font-size:13px">
+            <span><span class="req">* สีแดง</span> = ฟิลด์บังคับ (Required)</span>
+            <span><span class="auto">สีเขียว / ตัวเอียง</span> = ระบบเติมอัตโนมัติ</span>
+            <span><span class="ro" style="font-weight:600">สีส้ม / ReadOnly</span> = อ่านได้อย่างเดียว แก้ไขไม่ได้</span>
+            <span><span class="opt">สีเทา</span> = ไม่บังคับ (Optional)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      เอกสารนี้จัดทำโดยอัตโนมัติจากซอร์สโค้ด · ระบบจัดการข้อมูลลูกค้า v1.0 · 2026
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
