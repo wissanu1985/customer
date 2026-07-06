@@ -60,3 +60,6 @@ nunit-*.xml
 *.user
 *.suo
 .vs/
+
+# Playwright MCP snapshots
+.playwright-mcp/
