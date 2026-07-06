@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject WebUi.Services.ErrorDialogService ErrorDialog
 
 <div class="page">
     <div class="sidebar">
@@ -11,7 +12,22 @@
         </div>
 
         <article class="content px-4">
-            @Body
+            <ErrorBoundary>
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent Context="ex">
+                    <div style="padding: 24px; text-align: center;">
+                        <p style="font-size: 18px; color: #c41e3a; margin-bottom: 16px;">
+                            เกิดข้อผิดพลาดที่ไม่คาดคิด
+                        </p>
+                        <p style="color: #666; margin-bottom: 16px;">@ex.Message</p>
+                        <AntDesign.Button Type="@AntDesign.ButtonType.Primary" OnClick="@(() => ErrorDialog.ShowAsync("รายละเอียดข้อผิดพลาด", ex))">
+                            ดูรายละเอียด
+                        </AntDesign.Button>
+                    </div>
+                </ErrorContent>
+            </ErrorBoundary>
         </article>
     </main>
 </div>

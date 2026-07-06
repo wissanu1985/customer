@@ -1,6 +1,7 @@
 using Application;
 using Infrastructure;
 using WebUi.Components;
+using WebUi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,12 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // Ant Design Blazor (components + MessageService/ModalService/NotificationService)
 builder.Services.AddAntDesign();
+
+// Global error dialog service — shows modal popup on unexpected errors
+builder.Services.AddScoped<ErrorDialogService>();
+
+// Scoped mediator — creates a fresh DI scope per Send() to avoid DbContext concurrency in Blazor Server
+builder.Services.AddScoped<ScopedMediator>();
 
 // Blazor Server
 builder.Services.AddRazorComponents()
