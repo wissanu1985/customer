@@ -1,266 +1,144 @@
-﻿using AntDesign;
-using AntDesign.TableModels;
-using Application.Commons.Wrappers;
-using Application.Features.Customers.Queries.GetCustomer;
-using Application.Features.Customers.Queries.SearchCustomers;
-using Mediator;
-using Microsoft.AspNetCore.Components;
-using WebUi.Services;
+@page "/search-customer"
+@rendermode InteractiveServer
+@using Application.Commons.Wrappers
+@using Application.Features.Customers.Queries.SearchCustomers
 
-using SearchRequest = Application.Features.Customers.Queries.SearchCustomers.Request;
-using DetailRequest = Application.Features.Customers.Queries.GetCustomer.Request;
+<PageTitle>ค้นหาลูกค้า</PageTitle>
 
-namespace WebUi.Components.Pages;
+<h1>ค้นหาลูกค้า</h1>
 
-public partial class SearchCustomer
-{
-    [Inject] private ScopedMediator Mediator { get; set; } = default!;
-    [Inject] private MessageService Message { get; set; } = default!;
-    [Inject] private WebUi.Services.ErrorDialogService ErrorDialog { get; set; } = default!;
+<Row Gutter="(16, 16)" Style="margin-bottom: 16px;">
+    <Col Xs="24" Sm="12" Md="8">
+        <Input @bind-Value="@nationalId" Placeholder="เลขบัตรประจำตัว"
+               AllowClear="true" Style="width: 100%" />
+    </Col>
+    <Col Xs="24" Sm="12" Md="8">
+        <Input @bind-Value="@firstName" Placeholder="ชื่อ"
+               AllowClear="true" Style="width: 100%" />
+    </Col>
+    <Col Xs="24" Sm="12" Md="8">
+        <Input @bind-Value="@lastName" Placeholder="นามสกุล"
+               AllowClear="true" Style="width: 100%" />
+    </Col>
+</Row>
 
-    // Search filters
-    private string nationalId = string.Empty;
-    private string firstName = string.Empty;
-    private string lastName = string.Empty;
-    private string postalCode = string.Empty;
+<Row Gutter="(16, 16)" Style="margin-bottom: 16px;">
+    <Col Xs="24" Sm="12" Md="8">
+        <Select TItem="ProvinceItem" TItemValue="int?"
+                DataSource="@provinces"
+                ItemLabel="p => p.ProvinceThai"
+                ItemValue="p => (int?)p.ProvinceID"
+                @bind-Value="@selectedProvinceId"
+                Placeholder="จังหวัด"
+                OnSelectedItemChanged="OnProvinceChangedAsync"
+                AllowClear="true"
+                Loading="@provincesLoading"
+                Disabled="@provincesLoading"
+                Style="width: 100%" />
+    </Col>
+    <Col Xs="24" Sm="12" Md="8">
+        <Select TItem="DistrictItem" TItemValue="int?"
+                DataSource="@districts"
+                ItemLabel="d => d.DistrictThai"
+                ItemValue="d => (int?)d.DistrictID"
+                @bind-Value="@selectedDistrictId"
+                Placeholder="อำเภอ/เขต"
+                OnSelectedItemChanged="OnDistrictChangedAsync"
+                Disabled="@(selectedProvinceId is null)"
+                AllowClear="true"
+                Style="width: 100%" />
+    </Col>
+    <Col Xs="24" Sm="12" Md="8">
+        <Select TItem="SubDistrictItem" TItemValue="int?"
+                DataSource="@subDistricts"
+                ItemLabel="s => s.TambonThai"
+                ItemValue="s => (int?)s.TambonID"
+                @bind-Value="@selectedSubDistrictId"
+                Placeholder="ตำบล/แขวง"
+                OnSelectedItemChanged="OnSubDistrictChanged"
+                Disabled="@(selectedDistrictId is null)"
+                AllowClear="true"
+                Style="width: 100%" />
+    </Col>
+</Row>
 
-    private int? selectedProvinceId;
-    private int? selectedDistrictId;
-    private int? selectedSubDistrictId;
+<Row Gutter="(16, 16)" Style="margin-bottom: 16px;">
+    <Col Xs="24" Sm="12" Md="8">
+        <Input @bind-Value="@postalCode" Placeholder="รหัสไปรษณีย์"
+               AllowClear="true" MaxLength="5"
+               Disabled="@(selectedSubDistrictId is not null)"
+               Style="width: 100%" />
+    </Col>
+    <Col Xs="24" Sm="24" Md="16">
+        <Space>
+            <SpaceItem>
+                <Button Type="@ButtonType.Primary" Loading="@loading" OnClick="OnSearchClickAsync">
+                    ค้นหา
+                </Button>
+            </SpaceItem>
+            <SpaceItem>
+                <Button Type="@ButtonType.Default" OnClick="ResetFilters">
+                    ล้าง
+                </Button>
+            </SpaceItem>
+        </Space>
+    </Col>
+</Row>
 
-    private List<ProvinceItem> provinces = new();
-    private List<DistrictItem> districts = new();
-    private List<SubDistrictItem> subDistricts = new();
-    private bool provincesLoading = true;
+<Table TItem="CustomerSearchItem"
+       DataSource="@rows"
+       Total="@total"
+       Loading="@loading"
+       PageIndex="@pageIndex"
+       PageSize="@pageSize"
+       OnChange="OnTableChangeAsync"
+       RemoteDataSource="true"
+       Size="TableSize.Middle"
+       ScrollX="960"
+       RowKey="c => c.Id.ToString()">
+    <PropertyColumn Property="c => c.NationalId" Title="เลขบัตรประจำตัว" Width="160" />
+    <Column TData="string" Title="ชื่อ-นามสกุล" Width="180">
+        @(context.FirstName) @(context.LastName)
+    </Column>
+    <Column TData="string" Title="วันเกิด" Width="120">
+        @context.BirthDate.ToString("dd/MM/yyyy")
+    </Column>
+    <PropertyColumn Property="c => c.AddressLine1" Title="ที่อยู่" Ellipsis Width="220" />
+    <PropertyColumn Property="c => c.Province" Title="จังหวัด" Width="120" />
+    <PropertyColumn Property="c => c.PostalCode" Title="รหัสไปรษณีย์" Width="110" />
+    <ActionColumn Title="จัดการ" Width="120" Fixed="ColumnFixPlacement.Right">
+        <Button Type="@ButtonType.Link" Size="ButtonSize.Small" OnClick="@(() => OpenDetailAsync(context.Id))">
+            ดูรายละเอียด
+        </Button>
+    </ActionColumn>
+</Table>
 
-    // Result state
-    private List<CustomerSearchItem> rows = new();
-    private int total;
-    private int pageIndex = 1;
-    private int pageSize = 10;
-    private bool loading;
-
-    // Detail drawer state
-    private bool detailVisible;
-    private bool detailLoading;
-    private CustomerDetail? detail;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+<Drawer Title="@("รายละเอียดลูกค้า")"
+        Width="480"
+        Visible="@detailVisible"
+        OnClose="OnDetailClose">
+    @if (detailLoading)
     {
-        if (!firstRender) return;
-        await LoadProvincesAsync();
-        await SearchAsync();
+        <div style="text-align: center; padding: 48px 0;">
+            <Spin />
+        </div>
     }
-
-    private async Task LoadProvincesAsync()
+    else if (detail is not null)
     {
-        try
-        {
-            var result = await Mediator.Send(new Application.Features.Locations.Queries.GetAllProvinces.Request());
-            if (result.IsSuccess && result.Data is not null)
-            {
-                provinces = result.Data
-                    .Select(p => new ProvinceItem { ProvinceID = p.ProvinceID, ProvinceThai = p.ProvinceThai })
-                    .ToList();
-            }
-        }
-        catch (Exception ex)
-        {
-            await ErrorDialog.ShowAsync("ไม่สามารถโหลดข้อมูลจังหวัดได้", ex);
-        }
-        finally
-        {
-            provincesLoading = false;
-            await InvokeAsync(StateHasChanged);
-        }
+        <Descriptions Bordered Size="DescriptionsSize.Small" Column="1">
+            <DescriptionsItem Title="เลขบัตรประจำตัว">@detail.NationalId</DescriptionsItem>
+            <DescriptionsItem Title="ชื่อ">@detail.FirstName</DescriptionsItem>
+            <DescriptionsItem Title="นามสกุล">@detail.LastName</DescriptionsItem>
+            <DescriptionsItem Title="วันเกิด">@detail.BirthDate.ToString("dd/MM/yyyy")</DescriptionsItem>
+            <DescriptionsItem Title="ที่อยู่">@detail.AddressLine1</DescriptionsItem>
+            <DescriptionsItem Title="ตำบล/แขวง">@detail.SubDistrict</DescriptionsItem>
+            <DescriptionsItem Title="อำเภอ/เขต">@detail.District</DescriptionsItem>
+            <DescriptionsItem Title="จังหวัด">@detail.Province</DescriptionsItem>
+            <DescriptionsItem Title="รหัสไปรษณีย์">@detail.PostalCode</DescriptionsItem>
+        </Descriptions>
     }
-
-    private async Task OnProvinceChangedAsync(ProvinceItem? item)
+    else
     {
-        // Reset downstream selections when province changes
-        districts.Clear();
-        subDistricts.Clear();
-        selectedDistrictId = null;
-        selectedSubDistrictId = null;
-        postalCode = string.Empty;
-
-        if (item is null) return;
-
-        try
-        {
-            var result = await Mediator.Send(new Application.Features.Locations.Queries.GetDistrictsByProvince.Request(item.ProvinceID));
-            if (result.IsSuccess && result.Data is not null)
-            {
-                districts = result.Data
-                    .Select(d => new DistrictItem { DistrictID = d.DistrictID, DistrictThai = d.DistrictThai })
-                    .ToList();
-            }
-        }
-        catch (Exception ex)
-        {
-            await ErrorDialog.ShowAsync("ไม่สามารถโหลดข้อมูลอำเภอได้", ex);
-        }
+        <Empty Description="@("ไม่พบข้อมูล")" />
     }
-
-    private async Task OnDistrictChangedAsync(DistrictItem? item)
-    {
-        subDistricts.Clear();
-        selectedSubDistrictId = null;
-        postalCode = string.Empty;
-
-        if (item is null) return;
-
-        try
-        {
-            var result = await Mediator.Send(new Application.Features.Locations.Queries.GetSubDistrictsByDistrict.Request(item.DistrictID));
-            if (result.IsSuccess && result.Data is not null)
-            {
-                subDistricts = result.Data
-                    .Select(s => new SubDistrictItem { TambonID = s.TambonID, TambonThai = s.TambonThai, PostalCode = s.PostalCode })
-                    .ToList();
-            }
-        }
-        catch (Exception ex)
-        {
-            await ErrorDialog.ShowAsync("ไม่สามารถโหลดข้อมูลตำบลได้", ex);
-        }
-    }
-
-    private void OnSubDistrictChanged(SubDistrictItem? item)
-    {
-        // Auto-fill and lock postal code when sub-district is selected
-        if (item is not null && !string.IsNullOrWhiteSpace(item.PostalCode))
-            postalCode = item.PostalCode;
-        else
-            postalCode = string.Empty;
-    }
-
-    private async Task OnSearchClickAsync()
-    {
-        pageIndex = 1;
-        await SearchAsync();
-    }
-
-    private async Task OnTableChangeAsync(QueryModel<CustomerSearchItem> query)
-    {
-        pageIndex = query.PageIndex;
-        pageSize = query.PageSize;
-        await SearchAsync();
-    }
-
-    private async Task SearchAsync()
-    {
-        loading = true;
-        try
-        {
-            var provinceName = selectedProvinceId is not null
-                ? provinces.FirstOrDefault(p => p.ProvinceID == selectedProvinceId)?.ProvinceThai
-                : null;
-            var districtName = selectedDistrictId is not null
-                ? districts.FirstOrDefault(d => d.DistrictID == selectedDistrictId)?.DistrictThai
-                : null;
-            var subDistrictName = selectedSubDistrictId is not null
-                ? subDistricts.FirstOrDefault(s => s.TambonID == selectedSubDistrictId)?.TambonThai
-                : null;
-
-            var result = await Mediator.Send(new SearchRequest(
-                NationalId: NullIfEmpty(nationalId),
-                FirstName: NullIfEmpty(firstName),
-                LastName: NullIfEmpty(lastName),
-                Province: provinceName,
-                District: districtName,
-                SubDistrict: subDistrictName,
-                PostalCode: NullIfEmpty(postalCode),
-                Page: pageIndex,
-                Size: pageSize));
-
-            if (result.IsSuccess && result.Data is not null)
-            {
-                rows = result.Data.Data.ToList();
-                total = result.Data.Total;
-            }
-            else
-            {
-                rows.Clear();
-                total = 0;
-                foreach (var msg in result.Messages)
-                    await Message.WarningAsync(msg);
-            }
-        }
-        catch (Exception ex)
-        {
-            await ErrorDialog.ShowAsync("ไม่สามารถค้นหาข้อมูลได้", ex);
-        }
-        finally
-        {
-            loading = false;
-        }
-    }
-
-    private void ResetFilters()
-    {
-        nationalId = string.Empty;
-        firstName = string.Empty;
-        lastName = string.Empty;
-        postalCode = string.Empty;
-        selectedProvinceId = null;
-        selectedDistrictId = null;
-        selectedSubDistrictId = null;
-        districts.Clear();
-        subDistricts.Clear();
-    }
-
-    private static string? NullIfEmpty(string value) =>
-        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
-
-    private async Task OpenDetailAsync(Guid id)
-    {
-        detailVisible = true;
-        detailLoading = true;
-        detail = null;
-        await InvokeAsync(StateHasChanged);
-
-        try
-        {
-            var result = await Mediator.Send(new DetailRequest(id));
-            if (result.IsSuccess)
-                detail = result.Data;
-            else
-                await Message.WarningAsync(result.Messages.Any() ? string.Join(" ", result.Messages) : "ไม่พบข้อมูล");
-        }
-        catch (Exception ex)
-        {
-            await ErrorDialog.ShowAsync("ไม่สามารถโหลดรายละเอียดได้", ex);
-        }
-        finally
-        {
-            detailLoading = false;
-        }
-    }
-
-    private void OnDetailClose()
-    {
-        detailVisible = false;
-        detail = null;
-    }
-
-    // Lightweight projection DTOs for Select DataSource binding
-    private sealed class ProvinceItem
-    {
-        public int ProvinceID { get; set; }
-        public string ProvinceThai { get; set; } = string.Empty;
-    }
-
-    private sealed class DistrictItem
-    {
-        public int DistrictID { get; set; }
-        public string DistrictThai { get; set; } = string.Empty;
-    }
-
-    private sealed class SubDistrictItem
-    {
-        public int TambonID { get; set; }
-        public string TambonThai { get; set; } = string.Empty;
-        public string PostalCode { get; set; } = string.Empty;
-    }
-}
+</Drawer>
