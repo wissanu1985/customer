@@ -1,4 +1,4 @@
-﻿using AntDesign;
+using AntDesign;
 using Application.Commons.Wrappers;
 using Mediator;
 using Microsoft.AspNetCore.Components;
