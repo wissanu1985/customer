@@ -64,3 +64,12 @@ nunit-*.xml
 # Playwright MCP snapshots
 .playwright-mcp/
 docs/sql/optimize-customer-indexes.sql
+
+# Superpowers docs (local only)
+docs/superpowers/
+
+# Devin CLI
+.devin/
+
+# Stitch reference
+.stitch-ref/
