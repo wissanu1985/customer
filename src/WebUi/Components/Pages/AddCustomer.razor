@@ -7,6 +7,26 @@
 
 <h1>เพิ่มลูกค้า</h1>
 
+<div style="margin-bottom: 16px;">
+    <InputFile OnChange="OnImageUploadedAsync" accept=".jpg,.jpeg,.png" class="ant-upload" disabled="@isProcessingOcr" />
+</div>
+
+@if (isProcessingOcr)
+{
+    <Alert Type="@AlertType.Info"
+           Message="กำลังประมวลผล OCR..."
+           ShowIcon="true"
+           Style="margin-bottom: 16px;" />
+}
+
+@if (ocrMessage is not null)
+{
+    <Alert Type="@ocrMessageType"
+           Message="@ocrMessage"
+           ShowIcon="true"
+           Style="margin-bottom: 16px;" />
+}
+
 <Form Model="@model" Layout="@FormLayout.Vertical" OnFinish="HandleSubmitAsync" OnFinishFailed="OnSubmitFailedAsync" ValidateOnChange="@validateOnChange">
     <FormItem Label="เลขบัตรประจำตัว" Name="NationalId">
         <Input @bind-Value="@context.NationalId" Placeholder="กรอกเลขบัตรประจำตัว 13 หลัก" MaxLength="13" />
@@ -91,7 +111,7 @@
     <FormItem>
         <Space>
             <SpaceItem>
-                <Button Type="@ButtonType.Primary" HtmlType="submit" Loading="@submitting">
+                <Button Type="@ButtonType.Primary" HtmlType="submit" Loading="@(submitting || isProcessingOcr)" Disabled="@isProcessingOcr">
                     บันทึก
                 </Button>
             </SpaceItem>

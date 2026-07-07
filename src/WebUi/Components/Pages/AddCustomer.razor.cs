@@ -1,8 +1,10 @@
 using AntDesign;
 using Application.Commons.Wrappers;
+using Application.Features.IdCardExtractions.Queries.ExtractIdCard;
 using Mediator;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.IO;
 using System.ComponentModel.DataAnnotations;
 using WebUi.Services;
 
@@ -23,6 +25,120 @@ public partial class AddCustomer
     private List<DistrictItem> districts = new();
     private List<SubDistrictItem> subDistricts = new();
     private bool provincesLoading = true;
+    private byte[]? uploadedImageBytes;
+    private bool isProcessingOcr;
+    private string? ocrMessage;
+    private AlertType ocrMessageType = AlertType.Info;
+    private static readonly RecyclableMemoryStreamManager StreamManager = new();
+
+    private async Task OnImageUploadedAsync(InputFileChangeEventArgs e)
+    {
+        if (e.File is null) return;
+
+        // Validate file extension
+        ocrMessage = null;
+        var ext = Path.GetExtension(e.File.Name).ToLowerInvariant();
+        if (ext is not (".jpg" or ".jpeg" or ".png"))
+        {
+            ocrMessage = "รองรับเฉพาะไฟล์ JPEG และ PNG";
+            ocrMessageType = AlertType.Error;
+            return;
+        }
+
+        isProcessingOcr = true;
+        StateHasChanged();
+
+        try
+        {
+            // Read IBrowserFile into a pooled stream, cap 5MB
+            using var fs = e.File.OpenReadStream(maxAllowedSize: 5_000_000);
+            using var ms = StreamManager.GetStream("idcard-upload");
+            await fs.CopyToAsync(ms);
+            uploadedImageBytes = ms.ToArray();
+
+            var result = await Mediator.Send(new Request(uploadedImageBytes, e.File.Name));
+            if (!result.IsSuccess)
+            {
+                ocrMessage = result.Messages.FirstOrDefault() ?? "ไม่สามารถประมวลผลบัตรได้";
+                ocrMessageType = AlertType.Error;
+                return;
+            }
+
+            ApplyExtractionToModel(result.Data!.Data);
+            ocrMessage = "AI เติมข้อมูลอัตโนมัติ กรุณาตรวจสอบความถูกต้อง";
+            ocrMessageType = AlertType.Success;
+        }
+        catch (Exception ex)
+        {
+            ocrMessage = $"เกิดข้อผิดพลาด: {ex.Message}";
+            ocrMessageType = AlertType.Error;
+        }
+        finally
+        {
+            isProcessingOcr = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async void ApplyExtractionToModel(IdCardData data)
+    {
+        // Direct text fields — only fill when the value looks valid
+        if (!string.IsNullOrWhiteSpace(data.NationalId) && System.Text.RegularExpressions.Regex.IsMatch(data.NationalId, @"^\d{13}$"))
+            model.NationalId = data.NationalId;
+        if (!string.IsNullOrWhiteSpace(data.FirstName)) model.FirstName = data.FirstName;
+        if (!string.IsNullOrWhiteSpace(data.LastName)) model.LastName = data.LastName;
+        if (data.BirthDate is { } bd && bd <= DateTime.Today) model.BirthDate = bd;
+        if (!string.IsNullOrWhiteSpace(data.AddressLine1)) model.AddressLine1 = data.AddressLine1;
+
+        // Cascade fuzzy match: Province → District → SubDistrict
+        if (!string.IsNullOrWhiteSpace(data.ProvinceName))
+        {
+            var provMatch = provinces
+                .Where(p => string.Equals(NormalizeProvince(p.ProvinceThai), NormalizeProvince(data.ProvinceName), StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            if (provMatch.Count == 1)
+            {
+                model.ProvinceId = provMatch[0].ProvinceID;
+                await OnProvinceChangedAsync(provMatch[0]);
+
+                if (!string.IsNullOrWhiteSpace(data.DistrictName))
+                {
+                    var distMatch = districts
+                        .Where(d => string.Equals(NormalizeDistrict(d.DistrictThai), NormalizeDistrict(data.DistrictName), StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                    if (distMatch.Count == 1)
+                    {
+                        model.DistrictId = distMatch[0].DistrictID;
+                        await OnDistrictChangedAsync(distMatch[0]);
+
+                        if (!string.IsNullOrWhiteSpace(data.SubDistrictName))
+                        {
+                            var subMatch = subDistricts
+                                .Where(s => string.Equals(NormalizeSubDistrict(s.TambonThai), NormalizeSubDistrict(data.SubDistrictName), StringComparison.OrdinalIgnoreCase))
+                                .ToList();
+                            if (subMatch.Count == 1)
+                            {
+                                model.SubDistrictId = subMatch[0].TambonID;
+                                OnSubDistrictChanged(subMatch[0]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // PostalCode fallback: if sub-district didn't fill it, use AI's value if valid
+        if (string.IsNullOrWhiteSpace(model.PostalCode)
+            && !string.IsNullOrWhiteSpace(data.PostalCode)
+            && System.Text.RegularExpressions.Regex.IsMatch(data.PostalCode, @"^\d{5}$"))
+        {
+            model.PostalCode = data.PostalCode;
+        }
+    }
+
+    private static string NormalizeProvince(string s) => s.Trim().Replace("จังหวัด", "", StringComparison.OrdinalIgnoreCase).Trim();
+    private static string NormalizeDistrict(string s) => s.Trim().Replace("อำเภอ", "", StringComparison.OrdinalIgnoreCase).Replace("เขต", "", StringComparison.OrdinalIgnoreCase).Trim();
+    private static string NormalizeSubDistrict(string s) => s.Trim().Replace("ตำบล", "", StringComparison.OrdinalIgnoreCase).Replace("แขวง", "", StringComparison.OrdinalIgnoreCase).Trim();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -136,7 +252,8 @@ public partial class AddCustomer
             District: districtName,
             Province: provinceName,
             PostalCode: model.PostalCode!,
-            IdCardImage: null);
+            IdCardImage: null,
+            IdCardImageBytes: uploadedImageBytes);
 
         submitting = true;
         try
@@ -174,6 +291,8 @@ public partial class AddCustomer
         districts.Clear();
         subDistricts.Clear();
         validateOnChange = false; // Back to validate-on-submit only for the fresh form
+        uploadedImageBytes = null;
+        ocrMessage = null;
     }
 
     // Local form model with DataAnnotations for client-side validation
