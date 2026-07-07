@@ -1,9 +1,13 @@
+using Application.Commons.Services;
 using Domain.Common;
 using Domain.Repositories;
 using Infrastructure.contexts;
 using Infrastructure.Interceptors;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
+using Infrastructure.Services.IdCardImageStore;
+using Infrastructure.Services.Typhoon;
+using Microsoft.IO;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -59,6 +63,23 @@ public static class DependencyInjection
         services.AddScoped<IAuditRepository, AuditRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IReadOnlyUnitOfWork, ReadOnlyUnitOfWork>();
+
+        // RecyclableMemoryStream pool — singleton, shared across all requests
+        services.AddSingleton<RecyclableMemoryStreamManager>();
+
+        // Typhoon OCR — typed HttpClient with timeout from config
+        services.AddHttpClient<ITyphoonOcrService, TyphoonOcrService>((sp, client) =>
+        {
+            var cfg = sp.GetRequiredService<IConfiguration>();
+            var timeout = cfg.GetValue("Typhoon:OcrTimeoutSeconds", 60);
+            client.Timeout = TimeSpan.FromSeconds(timeout);
+        });
+
+        // Typhoon Chat — OpenAI-compatible client
+        services.AddScoped<ITyphoonChatService, TyphoonChatService>();
+
+        // Encrypted ID card image store
+        services.AddScoped<IIdCardImageStore, IdCardImageStore>();
 
         return services;
     }
