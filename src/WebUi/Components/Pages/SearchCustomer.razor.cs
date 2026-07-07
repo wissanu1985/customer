@@ -2,6 +2,7 @@ using AntDesign;
 using AntDesign.TableModels;
 using Application.Commons.Wrappers;
 using Application.Features.Customers.Queries.GetCustomer;
+using Application.Features.Customers.Queries.GetIdCardImage;
 using Application.Features.Customers.Queries.SearchCustomers;
 using Mediator;
 using Microsoft.AspNetCore.Components;
@@ -9,6 +10,7 @@ using WebUi.Services;
 
 using SearchRequest = Application.Features.Customers.Queries.SearchCustomers.Request;
 using DetailRequest = Application.Features.Customers.Queries.GetCustomer.Request;
+using ImageRequest = Application.Features.Customers.Queries.GetIdCardImage.Request;
 
 namespace WebUi.Components.Pages;
 
@@ -45,6 +47,7 @@ public partial class SearchCustomer
     private bool detailVisible;
     private bool detailLoading;
     private CustomerDetail? detail;
+    private string? detailIdCardImage;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -222,13 +225,31 @@ public partial class SearchCustomer
         detailVisible = true;
         detailLoading = true;
         detail = null;
+        detailIdCardImage = null;
         await InvokeAsync(StateHasChanged);
 
         try
         {
             var result = await Mediator.Send(new DetailRequest(id));
-            if (result.IsSuccess)
+            if (result.IsSuccess && result.Data is not null)
+            {
                 detail = result.Data;
+
+                // Load ID card image in parallel — non-fatal if it fails
+                if (!string.IsNullOrWhiteSpace(detail.IdCardImage))
+                {
+                    try
+                    {
+                        var imageResult = await Mediator.Send(new ImageRequest(id));
+                        if (imageResult.IsSuccess)
+                            detailIdCardImage = imageResult.Data;
+                    }
+                    catch
+                    {
+                        // Image load failure should not block the detail view
+                    }
+                }
+            }
             else
                 await Message.WarningAsync(result.Messages.Any() ? string.Join(" ", result.Messages) : "ไม่พบข้อมูล");
         }
@@ -246,6 +267,7 @@ public partial class SearchCustomer
     {
         detailVisible = false;
         detail = null;
+        detailIdCardImage = null;
     }
 
     // Lightweight projection DTOs for Select DataSource binding

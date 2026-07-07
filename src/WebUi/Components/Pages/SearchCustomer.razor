@@ -128,6 +128,13 @@
     }
     else if (detail is not null)
     {
+        @if (detailIdCardImage is not null)
+        {
+            <div style="text-align: center; margin-bottom: 16px;">
+                <Image Src="@detailIdCardImage" Alt="รูปบัตรประชาชน"
+                       Width="320px" Preview="true" />
+            </div>
+        }
         <Descriptions Bordered Size="DescriptionsSize.Small" Column="1">
             <DescriptionsItem Title="เลขบัตรประจำตัว">@detail.NationalId</DescriptionsItem>
             <DescriptionsItem Title="ชื่อ">@detail.FirstName</DescriptionsItem>

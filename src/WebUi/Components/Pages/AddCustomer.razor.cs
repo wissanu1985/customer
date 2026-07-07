@@ -4,6 +4,7 @@ using Application.Features.IdCardExtractions.Queries.ExtractIdCard;
 using Mediator;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Logging;
 using Microsoft.IO;
 using System.ComponentModel.DataAnnotations;
 using WebUi.Services;
@@ -14,6 +15,7 @@ public partial class AddCustomer
 {
     [Inject] private ScopedMediator Mediator { get; set; } = default!;
     [Inject] private MessageService Message { get; set; } = default!;
+    [Inject] private ILogger<AddCustomer> Logger { get; set; } = default!;
     [Inject] private WebUi.Services.ErrorDialogService ErrorDialog { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
 
@@ -25,11 +27,15 @@ public partial class AddCustomer
     private List<DistrictItem> districts = new();
     private List<SubDistrictItem> subDistricts = new();
     private bool provincesLoading = true;
+    private int selectKey; // bumped after OCR fill to force Select components to re-render
     private byte[]? uploadedImageBytes;
     private string? uploadedImagePreview;
     private bool isProcessingOcr;
     private string? ocrMessage;
     private AlertType ocrMessageType = AlertType.Info;
+
+    // Contextual text for the loading overlay — reflects which async operation is running
+    private string overlayText => isProcessingOcr ? "กำลังประมวลผล OCR..." : "กำลังบันทึกข้อมูล...";
     private const int MaxImageBytes = 5 * 1024 * 1024; // 5 MB — matches RequestValidator
     private static readonly RecyclableMemoryStreamManager StreamManager = new();
 
@@ -37,9 +43,10 @@ public partial class AddCustomer
     {
         if (e.File is null) return;
 
+        // Clear all previous form state so each upload starts fresh
+        ResetForm();
+
         // Validate extension + size BEFORE showing loading state (spec §5: Thai messages, no API call)
-        ocrMessage = null;
-        uploadedImagePreview = null;
         var ext = Path.GetExtension(e.File.Name).ToLowerInvariant();
         if (ext is not (".jpg" or ".jpeg" or ".png"))
         {
@@ -101,15 +108,19 @@ public partial class AddCustomer
         if (!string.IsNullOrWhiteSpace(data.AddressLine1)) model.AddressLine1 = data.AddressLine1;
 
         // Cascade fuzzy match: Province → District → SubDistrict
+        // StateHasChanged after each level lets AntDesign Select re-render with updated DataSource
         if (!string.IsNullOrWhiteSpace(data.ProvinceName))
         {
+            Logger.LogDebug("OCR provinceName='{Raw}' normalized='{Norm}'", data.ProvinceName, NormalizeProvince(data.ProvinceName));
+            Logger.LogDebug("DB provinces (normalized): {List}", string.Join(", ", provinces.Select(p => NormalizeProvince(p.ProvinceThai))));
             var provMatch = provinces
                 .Where(p => string.Equals(NormalizeProvince(p.ProvinceThai), NormalizeProvince(data.ProvinceName), StringComparison.OrdinalIgnoreCase))
                 .ToList();
+            Logger.LogDebug("Province matches: {Count}", provMatch.Count);
             if (provMatch.Count == 1)
             {
-                model.ProvinceId = provMatch[0].ProvinceID;
                 await OnProvinceChangedAsync(provMatch[0]);
+                model.ProvinceId = provMatch[0].ProvinceID;
 
                 if (!string.IsNullOrWhiteSpace(data.DistrictName))
                 {
@@ -118,8 +129,8 @@ public partial class AddCustomer
                         .ToList();
                     if (distMatch.Count == 1)
                     {
-                        model.DistrictId = distMatch[0].DistrictID;
                         await OnDistrictChangedAsync(distMatch[0]);
+                        model.DistrictId = distMatch[0].DistrictID;
 
                         if (!string.IsNullOrWhiteSpace(data.SubDistrictName))
                         {
@@ -144,11 +155,22 @@ public partial class AddCustomer
         {
             model.PostalCode = data.PostalCode;
         }
+
+        // Force AntDesign Select to re-create so programmatic value is displayed correctly
+        selectKey++;
     }
 
-    private static string NormalizeProvince(string s) => s.Trim().Replace("จังหวัด", "", StringComparison.OrdinalIgnoreCase).Trim();
-    private static string NormalizeDistrict(string s) => s.Trim().Replace("อำเภอ", "", StringComparison.OrdinalIgnoreCase).Replace("เขต", "", StringComparison.OrdinalIgnoreCase).Trim();
-    private static string NormalizeSubDistrict(string s) => s.Trim().Replace("ตำบล", "", StringComparison.OrdinalIgnoreCase).Replace("แขวง", "", StringComparison.OrdinalIgnoreCase).Trim();
+    private static string NormalizeProvince(string s) => StripPrefixes(s, "จังหวัด", "จ.");
+    private static string NormalizeDistrict(string s) => StripPrefixes(s, "อำเภอ", "เขต", "อ.");
+    private static string NormalizeSubDistrict(string s) => StripPrefixes(s, "ตำบล", "แขวง", "ต.");
+    private static string StripPrefixes(string s, params string[] prefixes)
+    {
+        var t = s.Trim();
+        foreach (var p in prefixes)
+            if (t.StartsWith(p, StringComparison.OrdinalIgnoreCase))
+                t = t[p.Length..].Trim();
+        return t;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -304,6 +326,7 @@ public partial class AddCustomer
         uploadedImageBytes = null;
         uploadedImagePreview = null;
         ocrMessage = null;
+        selectKey++; // Force AntDesign Select components to re-render with cleared values
     }
 
     // Local form model with DataAnnotations for client-side validation

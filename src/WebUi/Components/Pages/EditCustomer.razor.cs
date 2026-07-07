@@ -1,6 +1,7 @@
 using AntDesign;
 using Application.Commons.Wrappers;
 using Application.Features.Customers.Queries.GetCustomer;
+using Application.Features.Customers.Queries.GetIdCardImage;
 using Mediator;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -8,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using WebUi.Services;
 
 using DetailRequest = Application.Features.Customers.Queries.GetCustomer.Request;
+using ImageRequest = Application.Features.Customers.Queries.GetIdCardImage.Request;
 using UpdateRequest = Application.Features.Customers.Commands.UpdateCustomer.Request;
 
 namespace WebUi.Components.Pages;
@@ -22,6 +24,7 @@ public partial class EditCustomer
     [Inject] private NavigationManager Nav { get; set; } = default!;
 
     private CustomerFormModel? model;
+    private string? idCardImage;
     private bool submitting;
     private bool loadFailed;
     private bool validateOnChange; // Enable live re-validation only after first failed submit
@@ -73,6 +76,21 @@ public partial class EditCustomer
 
             // Resolve province/district/subdistrict IDs from stored names so dropdowns pre-select
             await ResolveLocationSelectionsAsync(d.Province, d.District, d.SubDistrict);
+
+            // Load ID card image for read-only display (non-fatal if it fails)
+            if (!string.IsNullOrWhiteSpace(d.IdCardImage))
+            {
+                try
+                {
+                    var imageResult = await Mediator.Send(new ImageRequest(Id));
+                    if (imageResult.IsSuccess)
+                        idCardImage = imageResult.Data;
+                }
+                catch
+                {
+                    // Image load failure should not block editing
+                }
+            }
         }
         catch (Exception ex)
         {

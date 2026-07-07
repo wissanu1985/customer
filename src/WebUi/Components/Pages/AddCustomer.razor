@@ -7,23 +7,30 @@
 
 <h1>เพิ่มลูกค้า</h1>
 
-<div style="margin-bottom: 16px;">
-    <InputFile OnChange="OnImageUploadedAsync" accept=".jpg,.jpeg,.png" class="ant-upload" disabled="@isProcessingOcr" />
+<LoadingOverlay Visible="@(isProcessingOcr || submitting)" Text="@overlayText">
+<div class="idcard-upload-wrapper">
+    <label class="ant-upload ant-upload-drag ant-upload-select">
+        <InputFile OnChange="OnImageUploadedAsync" accept=".jpg,.jpeg,.png" class="idcard-upload-input" disabled="@isProcessingOcr" />
+        <span class="ant-upload-btn" role="button">
+            <div class="ant-upload-drag-container">
+                <p class="ant-upload-drag-icon">
+                    <Icon Type="inbox" />
+                </p>
+                <p class="ant-upload-text">
+                    @(isProcessingOcr ? "กำลังประมวลผล OCR..." : "คลิกเพื่อเลือกไฟล์รูปบัตรประชาชน")
+                </p>
+                <p class="ant-upload-hint">รองรับเฉพาะไฟล์ JPEG และ PNG (ไม่เกิน 5MB)</p>
+            </div>
+        </span>
+    </label>
 </div>
 
 @if (uploadedImagePreview is not null)
 {
-    <div style="margin-bottom: 16px;">
-        <img src="@uploadedImagePreview" alt="ตัวอย่างรูปบัตร" style="max-width: 200px; max-height: 200px; border: 1px solid #d9d9d9; border-radius: 4px;" />
+    <div class="idcard-preview-wrapper">
+        <Image Src="@uploadedImagePreview" Alt="ตัวอย่างรูปบัตร"
+               Width="200px" Preview="true" />
     </div>
-}
-
-@if (isProcessingOcr)
-{
-    <Alert Type="@AlertType.Info"
-           Message="กำลังประมวลผล OCR..."
-           ShowIcon="true"
-           Style="margin-bottom: 16px;" />
 }
 
 @if (ocrMessage is not null)
@@ -65,6 +72,7 @@
         <Col Xs="24" Sm="12">
             <FormItem Label="จังหวัด" Name="ProvinceId">
                 <Select TItem="ProvinceItem" TItemValue="int?"
+                        @key="selectKey"
                         DataSource="@provinces"
                         ItemLabel="p => p.ProvinceThai"
                         ItemValue="p => (int?)p.ProvinceID"
@@ -80,6 +88,7 @@
         <Col Xs="24" Sm="12">
             <FormItem Label="อำเภอ/เขต" Name="DistrictId">
                 <Select TItem="DistrictItem" TItemValue="int?"
+                        @key="selectKey"
                         DataSource="@districts"
                         ItemLabel="d => d.DistrictThai"
                         ItemValue="d => (int?)d.DistrictID"
@@ -97,6 +106,7 @@
         <Col Xs="24" Sm="12">
             <FormItem Label="ตำบล/แขวง" Name="SubDistrictId">
                 <Select TItem="SubDistrictItem" TItemValue="int?"
+                        @key="selectKey"
                         DataSource="@subDistricts"
                         ItemLabel="s => s.TambonThai"
                         ItemValue="s => (int?)s.TambonID"
@@ -128,3 +138,4 @@
         </Space>
     </FormItem>
 </Form>
+</LoadingOverlay>

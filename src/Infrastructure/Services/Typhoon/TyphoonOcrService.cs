@@ -66,9 +66,13 @@ public sealed class TyphoonOcrService : ITyphoonOcrService
             }
             if (doc.RootElement.TryGetProperty("results", out var results) && results.ValueKind == System.Text.Json.JsonValueKind.Array)
             {
-                // Concatenate all result text blocks
-                return string.Join("\n", results.EnumerateArray()
-                    .Select(r => r.TryGetProperty("text", out var t) ? t.GetString() : null));
+                // Extract content from results[].message.choices[].message.content
+                var contents = results.EnumerateArray()
+                    .Where(r => r.TryGetProperty("message", out var msg) && msg.TryGetProperty("choices", out var choices) && choices.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    .SelectMany(r => r.GetProperty("message").GetProperty("choices").EnumerateArray()
+                        .Where(c => c.TryGetProperty("message", out var m) && m.TryGetProperty("content", out var content) && content.ValueKind == System.Text.Json.JsonValueKind.String)
+                        .Select(c => c.GetProperty("message").GetProperty("content").GetString()));
+                return string.Join("\n", contents.Where(s => !string.IsNullOrEmpty(s)));
             }
         }
         catch (System.Text.Json.JsonException)

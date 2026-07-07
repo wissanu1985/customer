@@ -1,0 +1,52 @@
+/* Drag-and-drop upload area styled like AntDesign Upload.Drag */
+.idcard-upload-wrapper {
+    margin-bottom: 16px;
+}
+
+.idcard-upload-wrapper ::deep .idcard-upload-input {
+    display: none;
+}
+
+.idcard-upload-wrapper ::deep .ant-upload.ant-upload-drag {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: 1px dashed #d9d9d9;
+    border-radius: 8px;
+    background: #fafafa;
+    cursor: pointer;
+    transition: border-color 0.3s, background 0.3s;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.idcard-upload-wrapper ::deep .ant-upload.ant-upload-drag:hover {
+    border-color: #1677ff;
+}
+
+.idcard-upload-wrapper ::deep .ant-upload.ant-upload-drag.ant-upload-drag-hover {
+    border-color: #1677ff;
+    background: #e6f4ff;
+}
+
+.idcard-upload-wrapper ::deep .ant-upload-drag-icon {
+    margin-bottom: 8px;
+    color: #1677ff;
+    font-size: 40px;
+}
+
+.idcard-upload-wrapper ::deep .ant-upload-text {
+    margin: 0 0 4px;
+    color: rgba(0, 0, 0, 0.88);
+    font-size: 14px;
+}
+
+.idcard-upload-wrapper ::deep .ant-upload-hint {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 12px;
+}
+
+.idcard-preview-wrapper {
+    margin-bottom: 16px;
+}

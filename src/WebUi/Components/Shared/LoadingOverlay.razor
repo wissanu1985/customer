@@ -1,0 +1,20 @@
+@* Liquid-glass loading overlay — wraps content and shows a glassmorphic spinner on top when Visible *@
+<div class="loading-overlay-wrapper">
+    @ChildContent
+
+    @if (Visible)
+    {
+        <div class="loading-overlay-backdrop" role="status" aria-live="polite">
+            <div class="loading-overlay-card">
+                <div class="loading-overlay-spinner" aria-hidden="true">
+                    <div class="loading-overlay-spinner-ring"></div>
+                    <div class="loading-overlay-spinner-ring loading-overlay-spinner-ring--delayed"></div>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Text))
+                {
+                    <p class="loading-overlay-text">@Text</p>
+                }
+            </div>
+        </div>
+    }
+</div>

@@ -73,3 +73,12 @@ docs/superpowers/
 
 # Stitch reference (local only)
 .stitch-ref
+
+# Solution files (local only — keep .slnx, ignore .sln)
+*.sln
+src/WebUi/files/idcards
+.knowledges
+.vscode
+
+# Temp commit message file
+.commit-msg.txt

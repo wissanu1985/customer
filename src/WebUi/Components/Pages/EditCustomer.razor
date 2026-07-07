@@ -19,6 +19,14 @@
 
 @if (model is not null)
 {
+    @if (idCardImage is not null)
+    {
+        <div class="idcard-display-wrapper">
+            <Image Src="@idCardImage" Alt="รูปบัตรประชาชน"
+                   Width="240px" Preview="true" />
+        </div>
+    }
+
     <Form Model="@model" Layout="@FormLayout.Vertical" OnFinish="HandleSubmitAsync" OnFinishFailed="OnSubmitFailedAsync" ValidateOnChange="@validateOnChange">
         <FormItem Label="เลขบัตรประจำตัว" Name="NationalId">
             <Input @bind-Value="@context.NationalId" Placeholder="กรอกเลขบัตรประจำตัว 13 หลัก" MaxLength="13" />
