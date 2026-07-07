@@ -28,7 +28,7 @@ public sealed class IdCardImageStore : IIdCardImageStore
         _encryptor = new AesImageEncryptor(key, streamManager);
     }
 
-    public async Task<string> SaveAsync(byte[] imageBytes, int customerId, CancellationToken cancellationToken = default)
+    public async Task<string> SaveAsync(byte[] imageBytes, Guid customerId, CancellationToken cancellationToken = default)
     {
         var encrypted = _encryptor.Encrypt(imageBytes);
         var filePath = Path.Combine(_storageRoot, $"{customerId}.bin");

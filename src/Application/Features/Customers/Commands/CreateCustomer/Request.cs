@@ -13,4 +13,5 @@ public sealed record Request(
     string District,
     string Province,
     string PostalCode,
-    string? IdCardImage = null) : IRequest<Result<Response>>;
+    string? IdCardImage = null,
+    byte[]? IdCardImageBytes = null) : IRequest<Result<Response>>;

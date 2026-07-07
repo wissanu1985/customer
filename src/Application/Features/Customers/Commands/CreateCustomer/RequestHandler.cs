@@ -1,3 +1,4 @@
+using Application.Commons.Services;
 using Application.Commons.Wrappers;
 using Domain.Common;
 using Domain.Entities;
@@ -11,11 +12,13 @@ public sealed class RequestHandler : IRequestHandler<Request, Result<Response>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICustomerRepository _customerRepository;
+    private readonly IIdCardImageStore _imageStore;
 
-    public RequestHandler(IUnitOfWork unitOfWork, ICustomerRepository customerRepository)
+    public RequestHandler(IUnitOfWork unitOfWork, ICustomerRepository customerRepository, IIdCardImageStore imageStore)
     {
         _unitOfWork = unitOfWork;
         _customerRepository = customerRepository;
+        _imageStore = imageStore;
     }
 
     public async ValueTask<Result<Response>> Handle(Request request, CancellationToken cancellationToken)
@@ -37,11 +40,30 @@ public sealed class RequestHandler : IRequestHandler<Request, Result<Response>>
                 District = request.District,
                 Province = request.Province,
                 PostalCode = request.PostalCode,
-                IdCardImage = request.IdCardImage
+                IdCardImage = null
             };
 
             await _unitOfWork.Repository<Customer>().AddAsync(entity, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Save encrypted image now that we have entity.Id; update the path on the entity.
+            if (request.IdCardImageBytes is { Length: > 0 })
+            {
+                try
+                {
+                    var filePath = await _imageStore.SaveAsync(request.IdCardImageBytes, entity.Id, cancellationToken);
+                    entity.IdCardImage = filePath;
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                }
+                catch (Exception)
+                {
+                    // Customer is saved, but image failed — warn the user, don't fail the whole operation
+                    return Result<Response>.Success(
+                        new Response(entity.Id),
+                        new[] { "บันทึกข้อมูลลูกค้าเรียบร้อย แต่ไม่สามารถบันทึกรูปบัตรได้" },
+                        HttpStatusCode.Created);
+                }
+            }
 
             return Result<Response>.Success(new Response(entity.Id), statusCode: HttpStatusCode.Created);
         }
