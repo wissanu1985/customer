@@ -49,17 +49,11 @@ public sealed class TyphoonChatService : ITyphoonChatService
             TopP = 0.6f
         };
 
-        try
-        {
-            var completion = await _chatClient.CompleteChatAsync(messages, options, cancellationToken);
-            var content = completion.Value.Content[0].Text;
-            return ParseIdCardJson(content);
-        }
-        catch (Exception)
-        {
-            // Graceful degradation — return empty data, the user fills the form manually
-            return new IdCardData();
-        }
+        // API/network errors bubble up to ExtractIdCard.RequestHandler which returns Result.Failure.
+        // Only JSON parse failures (handled in ParseIdCardJson) are treated as graceful degradation.
+        var completion = await _chatClient.CompleteChatAsync(messages, options, cancellationToken);
+        var content = completion.Value.Content[0].Text;
+        return ParseIdCardJson(content);
     }
 
     private static IdCardData ParseIdCardJson(string content)

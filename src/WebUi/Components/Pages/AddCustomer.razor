@@ -11,6 +11,13 @@
     <InputFile OnChange="OnImageUploadedAsync" accept=".jpg,.jpeg,.png" class="ant-upload" disabled="@isProcessingOcr" />
 </div>
 
+@if (uploadedImagePreview is not null)
+{
+    <div style="margin-bottom: 16px;">
+        <img src="@uploadedImagePreview" alt="ตัวอย่างรูปบัตร" style="max-width: 200px; max-height: 200px; border: 1px solid #d9d9d9; border-radius: 4px;" />
+    </div>
+}
+
 @if (isProcessingOcr)
 {
     <Alert Type="@AlertType.Info"
@@ -103,7 +110,7 @@
         </Col>
         <Col Xs="24" Sm="12">
             <FormItem Label="รหัสไปรษณีย์" Name="PostalCode" >
-                <Input @bind-Value="@context.PostalCode" Placeholder="รหัสไปรษณีย์ 5 หลัก" MaxLength="5" ReadOnly />
+                <Input @bind-Value="@context.PostalCode" Placeholder="รหัสไปรษณีย์ 5 หลัก" MaxLength="5" />
             </FormItem>
         </Col>
     </Row>

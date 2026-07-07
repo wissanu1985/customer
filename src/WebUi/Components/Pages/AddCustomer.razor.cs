@@ -26,21 +26,30 @@ public partial class AddCustomer
     private List<SubDistrictItem> subDistricts = new();
     private bool provincesLoading = true;
     private byte[]? uploadedImageBytes;
+    private string? uploadedImagePreview;
     private bool isProcessingOcr;
     private string? ocrMessage;
     private AlertType ocrMessageType = AlertType.Info;
+    private const int MaxImageBytes = 5 * 1024 * 1024; // 5 MB — matches RequestValidator
     private static readonly RecyclableMemoryStreamManager StreamManager = new();
 
     private async Task OnImageUploadedAsync(InputFileChangeEventArgs e)
     {
         if (e.File is null) return;
 
-        // Validate file extension
+        // Validate extension + size BEFORE showing loading state (spec §5: Thai messages, no API call)
         ocrMessage = null;
+        uploadedImagePreview = null;
         var ext = Path.GetExtension(e.File.Name).ToLowerInvariant();
         if (ext is not (".jpg" or ".jpeg" or ".png"))
         {
             ocrMessage = "รองรับเฉพาะไฟล์ JPEG และ PNG";
+            ocrMessageType = AlertType.Error;
+            return;
+        }
+        if (e.File.Size > MaxImageBytes)
+        {
+            ocrMessage = "ไฟล์ต้องไม่เกิน 5MB";
             ocrMessageType = AlertType.Error;
             return;
         }
@@ -50,11 +59,12 @@ public partial class AddCustomer
 
         try
         {
-            // Read IBrowserFile into a pooled stream, cap 5MB
-            using var fs = e.File.OpenReadStream(maxAllowedSize: 5_000_000);
+            // Read IBrowserFile into a pooled stream
+            using var fs = e.File.OpenReadStream(maxAllowedSize: MaxImageBytes);
             using var ms = StreamManager.GetStream("idcard-upload");
             await fs.CopyToAsync(ms);
             uploadedImageBytes = ms.ToArray();
+            uploadedImagePreview = $"data:{e.File.ContentType};base64,{Convert.ToBase64String(uploadedImageBytes)}";
 
             var result = await Mediator.Send(new Request(uploadedImageBytes, e.File.Name));
             if (!result.IsSuccess)
@@ -64,7 +74,7 @@ public partial class AddCustomer
                 return;
             }
 
-            ApplyExtractionToModel(result.Data!.Data);
+            await ApplyExtractionToModel(result.Data!.Data);
             ocrMessage = "AI เติมข้อมูลอัตโนมัติ กรุณาตรวจสอบความถูกต้อง";
             ocrMessageType = AlertType.Success;
         }
@@ -80,7 +90,7 @@ public partial class AddCustomer
         }
     }
 
-    private async void ApplyExtractionToModel(IdCardData data)
+    private async Task ApplyExtractionToModel(IdCardData data)
     {
         // Direct text fields — only fill when the value looks valid
         if (!string.IsNullOrWhiteSpace(data.NationalId) && System.Text.RegularExpressions.Regex.IsMatch(data.NationalId, @"^\d{13}$"))
@@ -292,6 +302,7 @@ public partial class AddCustomer
         subDistricts.Clear();
         validateOnChange = false; // Back to validate-on-submit only for the fresh form
         uploadedImageBytes = null;
+        uploadedImagePreview = null;
         ocrMessage = null;
     }
 
