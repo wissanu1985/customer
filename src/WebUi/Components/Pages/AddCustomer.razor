@@ -1,141 +1,156 @@
 @page "/add-customer"
 @rendermode InteractiveServer
-@using Application.Commons.Wrappers
 @using System.ComponentModel.DataAnnotations
+@using WebUi.Components.Shared
 
 <PageTitle>เพิ่มลูกค้า</PageTitle>
 
-<h1>เพิ่มลูกค้า</h1>
+<CimPageHeader Title="เพิ่มข้อมูลลูกค้า"
+            Description="กรุณากรอกรายละเอียดข้อมูลพื้นฐานของลูกค้าให้ครบถ้วนเพื่อประสิทธิภาพในการบริหารจัดการข้อมูล"
+            Crumbs="@(new List<CimCrumb> {
+                new() { Label = "การจัดการลูกค้า" },
+                new() { Label = "เพิ่มข้อมูลลูกค้าใหม่" }
+            })" />
 
 <LoadingOverlay Visible="@(isProcessingOcr || submitting)" Text="@overlayText">
-<div class="idcard-upload-wrapper">
-    <label class="ant-upload ant-upload-drag ant-upload-select">
-        <InputFile OnChange="OnImageUploadedAsync" accept=".jpg,.jpeg,.png" class="idcard-upload-input" disabled="@isProcessingOcr" />
-        <span class="ant-upload-btn" role="button">
-            <div class="ant-upload-drag-container">
-                <p class="ant-upload-drag-icon">
-                    <Icon Type="inbox" />
-                </p>
-                <p class="ant-upload-text">
-                    @(isProcessingOcr ? "กำลังประมวลผล OCR..." : "คลิกเพื่อเลือกไฟล์รูปบัตรประชาชน")
-                </p>
-                <p class="ant-upload-hint">รองรับเฉพาะไฟล์ JPEG และ PNG (ไม่เกิน 5MB)</p>
+
+<div class="form-card">
+    <div class="form-card-header">
+        <span class="material-symbols-outlined form-card-icon">assignment_ind</span>
+        <h3 class="form-card-title">แบบฟอร์มข้อมูลบุคคล</h3>
+    </div>
+
+    <div class="form-card-body">
+        <div class="idcard-upload-wrapper">
+            <label class="ant-upload ant-upload-drag ant-upload-select">
+                <InputFile OnChange="OnImageUploadedAsync" accept=".jpg,.jpeg,.png" class="idcard-upload-input" disabled="@isProcessingOcr" />
+                <span class="ant-upload-btn" role="button">
+                    <div class="ant-upload-drag-container">
+                        <p class="ant-upload-drag-icon">
+                            <Icon Type="inbox" />
+                        </p>
+                        <p class="ant-upload-text">
+                            @(isProcessingOcr ? "กำลังประมวลผล OCR..." : "คลิกเพื่อเลือกไฟล์รูปบัตรประชาชน")
+                        </p>
+                        <p class="ant-upload-hint">รองรับเฉพาะไฟล์ JPEG และ PNG (ไม่เกิน 5MB)</p>
+                    </div>
+                </span>
+            </label>
+        </div>
+
+        @if (uploadedImagePreview is not null)
+        {
+            <div class="idcard-preview-wrapper">
+                <Image Src="@uploadedImagePreview" Alt="ตัวอย่างรูปบัตร"
+                       Width="200px" Preview="true" />
             </div>
-        </span>
-    </label>
+        }
+
+        @if (ocrMessage is not null)
+        {
+            <Alert Type="@ocrMessageType"
+                   Message="@ocrMessage"
+                   ShowIcon="true"
+                   Style="margin-bottom: 16px;" />
+        }
+
+        <Form Model="@model" Layout="@FormLayout.Vertical" OnFinish="HandleSubmitAsync" OnFinishFailed="OnSubmitFailedAsync" ValidateOnChange="@validateOnChange">
+            <FormItem Label="เลขบัตรประจำตัว" Name="NationalId">
+                <Input @bind-Value="@context.NationalId" Placeholder="กรอกเลขบัตรประจำตัว 13 หลัก" MaxLength="13" />
+            </FormItem>
+
+            <Row Gutter="(16, 16)">
+                <Col Xs="24" Sm="12">
+                    <FormItem Label="ชื่อ" Name="FirstName">
+                        <Input @bind-Value="@context.FirstName" Placeholder="กรอกชื่อ" />
+                    </FormItem>
+                </Col>
+                <Col Xs="24" Sm="12">
+                    <FormItem Label="นามสกุล" Name="LastName">
+                        <Input @bind-Value="@context.LastName" Placeholder="กรอกนามสกุล" />
+                    </FormItem>
+                </Col>
+            </Row>
+
+            <FormItem Label="วันเกิด" Name="BirthDate">
+                <DatePicker @bind-Value="@context.BirthDate" Picker="@DatePickerType.Date"
+                            DisabledDate="@(d => d > DateTime.Today)" Style="width: 100%" />
+            </FormItem>
+
+            <FormItem Label="ที่อยู่ (บ้านเลขที่ ถนน ซอย)" Name="AddressLine1">
+                <TextArea @bind-Value="@context.AddressLine1" Placeholder="กรอกที่อยู่" Rows="2" />
+            </FormItem>
+
+            <Row Gutter="(16, 16)">
+                <Col Xs="24" Sm="12">
+                    <FormItem Label="จังหวัด" Name="ProvinceId">
+                        <Select TItem="ProvinceItem" TItemValue="int?"
+                                @key="selectKey"
+                                DataSource="@provinces"
+                                ItemLabel="p => p.ProvinceThai"
+                                ItemValue="p => (int?)p.ProvinceID"
+                                @bind-Value="@context.ProvinceId"
+                                Placeholder="เลือกจังหวัด"
+                                OnSelectedItemChanged="OnProvinceChangedAsync"
+                                AllowClear="true"
+                                Loading="@provincesLoading"
+                                Disabled="@provincesLoading"
+                                Style="width: 100%" />
+                    </FormItem>
+                </Col>
+                <Col Xs="24" Sm="12">
+                    <FormItem Label="อำเภอ/เขต" Name="DistrictId">
+                        <Select TItem="DistrictItem" TItemValue="int?"
+                                @key="selectKey"
+                                DataSource="@districts"
+                                ItemLabel="d => d.DistrictThai"
+                                ItemValue="d => (int?)d.DistrictID"
+                                @bind-Value="@context.DistrictId"
+                                Placeholder="เลือกอำเภอ/เขต"
+                                OnSelectedItemChanged="OnDistrictChangedAsync"
+                                Disabled="@(context.ProvinceId is null)"
+                                AllowClear="true"
+                                Style="width: 100%" />
+                    </FormItem>
+                </Col>
+            </Row>
+
+            <Row Gutter="(16, 16)">
+                <Col Xs="24" Sm="12">
+                    <FormItem Label="ตำบล/แขวง" Name="SubDistrictId">
+                        <Select TItem="SubDistrictItem" TItemValue="int?"
+                                @key="selectKey"
+                                DataSource="@subDistricts"
+                                ItemLabel="s => s.TambonThai"
+                                ItemValue="s => (int?)s.TambonID"
+                                @bind-Value="@context.SubDistrictId"
+                                Placeholder="เลือกตำบล/แขวง"
+                                OnSelectedItemChanged="OnSubDistrictChanged"
+                                Disabled="@(context.DistrictId is null)"
+                                AllowClear="true"
+                                Style="width: 100%" />
+                    </FormItem>
+                </Col>
+                <Col Xs="24" Sm="12">
+                    <FormItem Label="รหัสไปรษณีย์" Name="PostalCode">
+                        <Input @bind-Value="@context.PostalCode" Placeholder="รหัสไปรษณีย์ 5 หลัก" MaxLength="5" />
+                    </FormItem>
+                </Col>
+            </Row>
+
+            <Divider />
+
+            <FormItem>
+                <div class="form-actions">
+                    <Button Type="@ButtonType.Default" OnClick="ResetForm">ยกเลิก</Button>
+                    <Button Type="@ButtonType.Primary" HtmlType="submit" Loading="@(submitting || isProcessingOcr)" Disabled="@isProcessingOcr">
+                        <span class="material-symbols-outlined btn-icon">save</span>
+                        บันทึกข้อมูล
+                    </Button>
+                </div>
+            </FormItem>
+        </Form>
+    </div>
 </div>
 
-@if (uploadedImagePreview is not null)
-{
-    <div class="idcard-preview-wrapper">
-        <Image Src="@uploadedImagePreview" Alt="ตัวอย่างรูปบัตร"
-               Width="200px" Preview="true" />
-    </div>
-}
-
-@if (ocrMessage is not null)
-{
-    <Alert Type="@ocrMessageType"
-           Message="@ocrMessage"
-           ShowIcon="true"
-           Style="margin-bottom: 16px;" />
-}
-
-<Form Model="@model" Layout="@FormLayout.Vertical" OnFinish="HandleSubmitAsync" OnFinishFailed="OnSubmitFailedAsync" ValidateOnChange="@validateOnChange">
-    <FormItem Label="เลขบัตรประจำตัว" Name="NationalId">
-        <Input @bind-Value="@context.NationalId" Placeholder="กรอกเลขบัตรประจำตัว 13 หลัก" MaxLength="13" />
-    </FormItem>
-
-    <Row Gutter="(16, 16)">
-        <Col Xs="24" Sm="12">
-            <FormItem Label="ชื่อ" Name="FirstName">
-                <Input @bind-Value="@context.FirstName" Placeholder="กรอกชื่อ" />
-            </FormItem>
-        </Col>
-        <Col Xs="24" Sm="12">
-            <FormItem Label="นามสกุล" Name="LastName">
-                <Input @bind-Value="@context.LastName" Placeholder="กรอกนามสกุล" />
-            </FormItem>
-        </Col>
-    </Row>
-
-    <FormItem Label="วันเกิด" Name="BirthDate">
-        <DatePicker @bind-Value="@context.BirthDate" Picker="@DatePickerType.Date"
-                    DisabledDate="@(d => d > DateTime.Today)" Style="width: 100%" />
-    </FormItem>
-
-    <FormItem Label="ที่อยู่ (บ้านเลขที่ ถนน ซอย)" Name="AddressLine1">
-        <TextArea @bind-Value="@context.AddressLine1" Placeholder="กรอกที่อยู่" Rows="2" />
-    </FormItem>
-
-    <Row Gutter="(16, 16)">
-        <Col Xs="24" Sm="12">
-            <FormItem Label="จังหวัด" Name="ProvinceId">
-                <Select TItem="ProvinceItem" TItemValue="int?"
-                        @key="selectKey"
-                        DataSource="@provinces"
-                        ItemLabel="p => p.ProvinceThai"
-                        ItemValue="p => (int?)p.ProvinceID"
-                        @bind-Value="@context.ProvinceId"
-                        Placeholder="เลือกจังหวัด"
-                        OnSelectedItemChanged="OnProvinceChangedAsync"
-                        AllowClear="true"
-                        Loading="@provincesLoading"
-                        Disabled="@provincesLoading"
-                        Style="width: 100%" />
-            </FormItem>
-        </Col>
-        <Col Xs="24" Sm="12">
-            <FormItem Label="อำเภอ/เขต" Name="DistrictId">
-                <Select TItem="DistrictItem" TItemValue="int?"
-                        @key="selectKey"
-                        DataSource="@districts"
-                        ItemLabel="d => d.DistrictThai"
-                        ItemValue="d => (int?)d.DistrictID"
-                        @bind-Value="@context.DistrictId"
-                        Placeholder="เลือกอำเภอ/เขต"
-                        OnSelectedItemChanged="OnDistrictChangedAsync"
-                        Disabled="@(context.ProvinceId is null)"
-                        AllowClear="true"
-                        Style="width: 100%" />
-            </FormItem>
-        </Col>
-    </Row>
-
-    <Row Gutter="(16, 16)">
-        <Col Xs="24" Sm="12">
-            <FormItem Label="ตำบล/แขวง" Name="SubDistrictId">
-                <Select TItem="SubDistrictItem" TItemValue="int?"
-                        @key="selectKey"
-                        DataSource="@subDistricts"
-                        ItemLabel="s => s.TambonThai"
-                        ItemValue="s => (int?)s.TambonID"
-                        @bind-Value="@context.SubDistrictId"
-                        Placeholder="เลือกตำบล/แขวง"
-                        OnSelectedItemChanged="OnSubDistrictChanged"
-                        Disabled="@(context.DistrictId is null)"
-                        AllowClear="true"
-                        Style="width: 100%" />
-            </FormItem>
-        </Col>
-        <Col Xs="24" Sm="12">
-            <FormItem Label="รหัสไปรษณีย์" Name="PostalCode" >
-                <Input @bind-Value="@context.PostalCode" Placeholder="รหัสไปรษณีย์ 5 หลัก" MaxLength="5" />
-            </FormItem>
-        </Col>
-    </Row>
-
-    <FormItem>
-        <Space>
-            <SpaceItem>
-                <Button Type="@ButtonType.Primary" HtmlType="submit" Loading="@(submitting || isProcessingOcr)" Disabled="@isProcessingOcr">
-                    บันทึก
-                </Button>
-            </SpaceItem>
-            <SpaceItem>
-                <Button Type="@ButtonType.Default" OnClick="ResetForm">ล้างฟอร์ม</Button>
-            </SpaceItem>
-        </Space>
-    </FormItem>
-</Form>
 </LoadingOverlay>

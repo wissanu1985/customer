@@ -1,13 +1,85 @@
 ﻿@page "/"
+@using WebUi.Components.Shared
 
 <PageTitle>หน้าหลัก</PageTitle>
 
-<h1>ระบบจัดการลูกค้า</h1>
+<CimPageHeader Title="ระบบจัดการข้อมูลลูกค้า"
+            Description="ยินดีต้อนรับกลับ, สรุปภาพรวมข้อมูลลูกค้าของคุณวันนี้" />
 
-<p>แอปพลิเคชันสำหรับบันทึกและค้นหาข้อมูลลูกค้า ทดสอบการทำงานของ Clean Architecture + Blazor Web App บน .NET 10</p>
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon stat-icon-primary">
+                <span class="material-symbols-outlined">groups</span>
+            </div>
+            <span class="stat-trend">
+                +12% <span class="material-symbols-outlined stat-trend-icon">trending_up</span>
+            </span>
+        </div>
+        <p class="stat-label">จำนวนลูกค้าทั้งหมด</p>
+        <h3 class="stat-value">12,840</h3>
+    </div>
 
-<h2>การใช้งาน</h2>
-<ul>
-    <li><a href="add-customer">เพิ่มลูกค้า</a> — กรอกข้อมูลลูกค้าใหม่แล้วบันทึก</li>
-    <li><a href="search-customer">ค้นหาลูกค้า</a> — ค้นหาและแก้ไขข้อมูลลูกค้าที่มีอยู่</li>
-</ul>
+    <div class="stat-card">
+        <div class="stat-card-top">
+            <div class="stat-icon stat-icon-secondary">
+                <span class="material-symbols-outlined">person_add</span>
+            </div>
+            <span class="stat-trend">
+                +5% <span class="material-symbols-outlined stat-trend-icon">trending_up</span>
+            </span>
+        </div>
+        <p class="stat-label">เพิ่มใหม่เดือนนี้</p>
+        <h3 class="stat-value">452</h3>
+    </div>
+
+    <div class="stat-card stat-card-cta">
+        <div class="stat-cta-content">
+            <h3 class="stat-cta-title">เข้าถึงด่วน</h3>
+            <p class="stat-cta-desc">จัดการข้อมูลลูกค้าได้รวดเร็วยิ่งขึ้นด้วยเครื่องมือลัด</p>
+        </div>
+        <div class="stat-cta-actions">
+            <a class="stat-cta-btn" href="add-customer">
+                <span class="material-symbols-outlined">person_add</span>
+                <span>เพิ่มลูกค้าใหม่</span>
+            </a>
+            <a class="stat-cta-btn" href="search-customer">
+                <span class="material-symbols-outlined">manage_search</span>
+                <span>ค้นหาแบบละเอียด</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-row">
+    <div class="dashboard-card dashboard-card-main">
+        <div class="dashboard-card-header">
+            <h3 class="dashboard-card-title">รายชื่อลูกค้าล่าสุด</h3>
+            <a class="dashboard-card-link" href="search-customer">ดูทั้งหมด</a>
+        </div>
+        <div class="dashboard-empty">
+            <span class="material-symbols-outlined dashboard-empty-icon">inbox</span>
+            <p>ยังไม่มีข้อมูลลูกค้าล่าสุด</p>
+        </div>
+    </div>
+
+    <div class="dashboard-card dashboard-card-side">
+        <div class="dashboard-card-header">
+            <h3 class="dashboard-card-title">เมนูหลัก</h3>
+        </div>
+        <nav class="dashboard-menu">
+            <a class="dashboard-menu-link" href="add-customer">
+                <span class="material-symbols-outlined">person_add</span>
+                <span>เพิ่มข้อมูลลูกค้า</span>
+            </a>
+            <a class="dashboard-menu-link" href="search-customer">
+                <span class="material-symbols-outlined">search</span>
+                <span>ค้นหาลูกค้า</span>
+            </a>
+            <a class="dashboard-menu-link" href="report">
+                <span class="material-symbols-outlined">assessment</span>
+                <span>รายงาน</span>
+            </a>
+        </nav>
+    </div>
+</div>

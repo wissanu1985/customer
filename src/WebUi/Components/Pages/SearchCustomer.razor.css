@@ -1,0 +1,51 @@
+/* Search filter card */
+.search-card {
+    background: var(--md-surface-container-lowest);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: var(--md-radius-xl);
+    box-shadow: 0 1px 3px rgba(11, 28, 48, 0.06);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+/* Table card with header + count badge */
+.table-card {
+    background: var(--md-surface-container-lowest);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: var(--md-radius-xl);
+    box-shadow: 0 1px 3px rgba(11, 28, 48, 0.06);
+    overflow: hidden;
+}
+.table-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid var(--md-outline-variant);
+    background: rgba(239, 244, 255, 0.5);
+}
+.table-card-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--md-primary);
+}
+.table-count-badge {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--md-on-secondary-container);
+    background: var(--md-secondary-container);
+    padding: 4px 12px;
+    border-radius: 999px;
+}
+
+.btn-icon {
+    font-size: 18px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+/* Pad table inside card */
+::deep .ant-table {
+    border-radius: 0;
+}

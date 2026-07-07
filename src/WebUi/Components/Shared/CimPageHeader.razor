@@ -1,0 +1,34 @@
+@if (Crumbs is { Count: > 0 })
+{
+    <nav class="page-crumbs" aria-label="breadcrumb">
+        <span class="material-symbols-outlined page-crumbs-home">home</span>
+        @for (var i = 0; i < Crumbs.Count; i++)
+        {
+            var crumb = Crumbs[i];
+            var isLast = i == Crumbs.Count - 1;
+            <span class="page-crumbs-sep">/</span>
+            if (isLast || string.IsNullOrWhiteSpace(crumb.Href))
+            {
+                <span class="page-crumbs-current">@crumb.Label</span>
+            }
+            else
+            {
+                <a class="page-crumbs-link" href="@crumb.Href">@crumb.Label</a>
+            }
+        }
+    </nav>
+}
+
+<div class="page-header">
+    <h2 class="page-title">@Title</h2>
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="page-description">@Description</p>
+    }
+    @if (Actions is not null)
+    {
+        <div class="page-actions">
+            @Actions
+        </div>
+    }
+</div>

@@ -1,120 +1,133 @@
 @page "/search-customer"
 @rendermode InteractiveServer
-@using Application.Commons.Wrappers
 @using Application.Features.Customers.Queries.SearchCustomers
+@using WebUi.Components.Shared
 
 <PageTitle>ค้นหาลูกค้า</PageTitle>
 
-<h1>ค้นหาลูกค้า</h1>
+<CimPageHeader Title="ค้นหาข้อมูลลูกค้า"
+            Description="ตรวจสอบ แก้ไข และจัดการรายชื่อลูกค้าจากฐานข้อมูลกลางด้วยรหัสบัตรประชาชนหรือชื่อ-นามสกุล"
+            Crumbs="@(new List<CimCrumb> {
+                new() { Label = "การจัดการลูกค้า" },
+                new() { Label = "ค้นหาลูกค้า" }
+            })" />
 
-<Row Gutter="(16, 16)" Style="margin-bottom: 16px;">
-    <Col Xs="24" Sm="12" Md="8">
-        <Input @bind-Value="@nationalId" Placeholder="เลขบัตรประจำตัว"
-               AllowClear="true" Style="width: 100%" />
-    </Col>
-    <Col Xs="24" Sm="12" Md="8">
-        <Input @bind-Value="@firstName" Placeholder="ชื่อ"
-               AllowClear="true" Style="width: 100%" />
-    </Col>
-    <Col Xs="24" Sm="12" Md="8">
-        <Input @bind-Value="@lastName" Placeholder="นามสกุล"
-               AllowClear="true" Style="width: 100%" />
-    </Col>
-</Row>
+<div class="search-card">
+    <Row Gutter="(16, 16)" Style="margin-bottom: 16px;">
+        <Col Xs="24" Sm="12" Md="8">
+            <Input @bind-Value="@nationalId" Placeholder="เลขบัตรประจำตัว"
+                   AllowClear="true" Style="width: 100%" />
+        </Col>
+        <Col Xs="24" Sm="12" Md="8">
+            <Input @bind-Value="@firstName" Placeholder="ชื่อ"
+                   AllowClear="true" Style="width: 100%" />
+        </Col>
+        <Col Xs="24" Sm="12" Md="8">
+            <Input @bind-Value="@lastName" Placeholder="นามสกุล"
+                   AllowClear="true" Style="width: 100%" />
+        </Col>
+    </Row>
 
-<Row Gutter="(16, 16)" Style="margin-bottom: 16px;">
-    <Col Xs="24" Sm="12" Md="8">
-        <Select TItem="ProvinceItem" TItemValue="int?"
-                DataSource="@provinces"
-                ItemLabel="p => p.ProvinceThai"
-                ItemValue="p => (int?)p.ProvinceID"
-                @bind-Value="@selectedProvinceId"
-                Placeholder="จังหวัด"
-                OnSelectedItemChanged="OnProvinceChangedAsync"
-                AllowClear="true"
-                Loading="@provincesLoading"
-                Disabled="@provincesLoading"
-                Style="width: 100%" />
-    </Col>
-    <Col Xs="24" Sm="12" Md="8">
-        <Select TItem="DistrictItem" TItemValue="int?"
-                DataSource="@districts"
-                ItemLabel="d => d.DistrictThai"
-                ItemValue="d => (int?)d.DistrictID"
-                @bind-Value="@selectedDistrictId"
-                Placeholder="อำเภอ/เขต"
-                OnSelectedItemChanged="OnDistrictChangedAsync"
-                Disabled="@(selectedProvinceId is null)"
-                AllowClear="true"
-                Style="width: 100%" />
-    </Col>
-    <Col Xs="24" Sm="12" Md="8">
-        <Select TItem="SubDistrictItem" TItemValue="int?"
-                DataSource="@subDistricts"
-                ItemLabel="s => s.TambonThai"
-                ItemValue="s => (int?)s.TambonID"
-                @bind-Value="@selectedSubDistrictId"
-                Placeholder="ตำบล/แขวง"
-                OnSelectedItemChanged="OnSubDistrictChanged"
-                Disabled="@(selectedDistrictId is null)"
-                AllowClear="true"
-                Style="width: 100%" />
-    </Col>
-</Row>
+    <Row Gutter="(16, 16)" Style="margin-bottom: 16px;">
+        <Col Xs="24" Sm="12" Md="8">
+            <Select TItem="ProvinceItem" TItemValue="int?"
+                    DataSource="@provinces"
+                    ItemLabel="p => p.ProvinceThai"
+                    ItemValue="p => (int?)p.ProvinceID"
+                    @bind-Value="@selectedProvinceId"
+                    Placeholder="จังหวัด"
+                    OnSelectedItemChanged="OnProvinceChangedAsync"
+                    AllowClear="true"
+                    Loading="@provincesLoading"
+                    Disabled="@provincesLoading"
+                    Style="width: 100%" />
+        </Col>
+        <Col Xs="24" Sm="12" Md="8">
+            <Select TItem="DistrictItem" TItemValue="int?"
+                    DataSource="@districts"
+                    ItemLabel="d => d.DistrictThai"
+                    ItemValue="d => (int?)d.DistrictID"
+                    @bind-Value="@selectedDistrictId"
+                    Placeholder="อำเภอ/เขต"
+                    OnSelectedItemChanged="OnDistrictChangedAsync"
+                    Disabled="@(selectedProvinceId is null)"
+                    AllowClear="true"
+                    Style="width: 100%" />
+        </Col>
+        <Col Xs="24" Sm="12" Md="8">
+            <Select TItem="SubDistrictItem" TItemValue="int?"
+                    DataSource="@subDistricts"
+                    ItemLabel="s => s.TambonThai"
+                    ItemValue="s => (int?)s.TambonID"
+                    @bind-Value="@selectedSubDistrictId"
+                    Placeholder="ตำบล/แขวง"
+                    OnSelectedItemChanged="OnSubDistrictChanged"
+                    Disabled="@(selectedDistrictId is null)"
+                    AllowClear="true"
+                    Style="width: 100%" />
+        </Col>
+    </Row>
 
-<Row Gutter="(16, 16)" Style="margin-bottom: 16px;">
-    <Col Xs="24" Sm="12" Md="8">
-        <Input @bind-Value="@postalCode" Placeholder="รหัสไปรษณีย์"
-               AllowClear="true" MaxLength="5"
-               Disabled="@(selectedSubDistrictId is not null)"
-               Style="width: 100%" />
-    </Col>
-    <Col Xs="24" Sm="24" Md="16">
-        <Space>
-            <SpaceItem>
-                <Button Type="@ButtonType.Primary" Loading="@loading" OnClick="OnSearchClickAsync">
-                    ค้นหา
-                </Button>
-            </SpaceItem>
-            <SpaceItem>
-                <Button Type="@ButtonType.Default" OnClick="ResetFilters">
-                    ล้าง
-                </Button>
-            </SpaceItem>
-        </Space>
-    </Col>
-</Row>
+    <Row Gutter="(16, 16)" Style="margin-bottom: 0;">
+        <Col Xs="24" Sm="12" Md="8">
+            <Input @bind-Value="@postalCode" Placeholder="รหัสไปรษณีย์"
+                   AllowClear="true" MaxLength="5"
+                   Disabled="@(selectedSubDistrictId is not null)"
+                   Style="width: 100%" />
+        </Col>
+        <Col Xs="24" Sm="24" Md="16">
+            <Space>
+                <SpaceItem>
+                    <Button Type="@ButtonType.Primary" Loading="@loading" OnClick="OnSearchClickAsync">
+                        <span class="material-symbols-outlined btn-icon">filter_list</span>
+                        ค้นหา
+                    </Button>
+                </SpaceItem>
+                <SpaceItem>
+                    <Button Type="@ButtonType.Default" OnClick="ResetFilters">ล้าง</Button>
+                </SpaceItem>
+            </Space>
+        </Col>
+    </Row>
+</div>
 
-<Table TItem="CustomerSearchItem"
-       DataSource="@rows"
-       Total="@total"
-       Loading="@loading"
-       PageIndex="@pageIndex"
-       PageSize="@pageSize"
-       OnChange="OnTableChangeAsync"
-       RemoteDataSource="true"
-       Size="TableSize.Middle"
-       ScrollX="960"
-       RowKey="c => c.Id.ToString()">
-    <PropertyColumn Property="c => c.NationalId" Title="เลขบัตรประจำตัว" Width="160" />
-    <Column TData="string" Title="ชื่อ-นามสกุล" Width="180">
-        @(context.FirstName) @(context.LastName)
-    </Column>
-    <Column TData="string" Title="วันเกิด" Width="120">
-        @context.BirthDate.ToString("dd/MM/yyyy")
-    </Column>
-    <PropertyColumn Property="c => c.AddressLine1" Title="ที่อยู่" Ellipsis Width="220" />
-    <PropertyColumn Property="c => c.Province" Title="จังหวัด" Width="120" />
-    <PropertyColumn Property="c => c.PostalCode" Title="รหัสไปรษณีย์" Width="110" />
-    <ActionColumn Title="จัดการ" Width="180" Fixed="ColumnFixPlacement.Right">
-        <Button Type="@ButtonType.Link" Size="ButtonSize.Small" OnClick="@(() => OpenDetailAsync(context.Id))">
-            ดูรายละเอียด
-        </Button>
-        <Button Type="@ButtonType.Link" Size="ButtonSize.Small" OnClick="@(() => Nav.NavigateTo($"/edit-customer/{context.Id}"))">
-            แก้ไข
-        </Button>
-    </ActionColumn>
-</Table>
+<div class="table-card">
+    <div class="table-card-header">
+        <h4 class="table-card-title">รายการลูกค้าทั้งหมด</h4>
+        <span class="table-count-badge">พบล่าสุด @total รายการ</span>
+    </div>
+
+    <Table TItem="CustomerSearchItem"
+           DataSource="@rows"
+           Total="@total"
+           Loading="@loading"
+           PageIndex="@pageIndex"
+           PageSize="@pageSize"
+           OnChange="OnTableChangeAsync"
+           RemoteDataSource="true"
+           Size="TableSize.Middle"
+           ScrollX="960"
+           RowKey="c => c.Id.ToString()">
+        <PropertyColumn Property="c => c.NationalId" Title="เลขบัตรประจำตัว" Width="160" />
+        <Column TData="string" Title="ชื่อ-นามสกุล" Width="180">
+            @(context.FirstName) @(context.LastName)
+        </Column>
+        <Column TData="string" Title="วันเกิด" Width="120">
+            @context.BirthDate.ToString("dd/MM/yyyy")
+        </Column>
+        <PropertyColumn Property="c => c.AddressLine1" Title="ที่อยู่" Ellipsis Width="220" />
+        <PropertyColumn Property="c => c.Province" Title="จังหวัด" Width="120" />
+        <PropertyColumn Property="c => c.PostalCode" Title="รหัสไปรษณีย์" Width="110" />
+        <ActionColumn Title="จัดการ" Width="180" Fixed="ColumnFixPlacement.Right">
+            <Button Type="@ButtonType.Link" Size="ButtonSize.Small" OnClick="@(() => OpenDetailAsync(context.Id))">
+                ดูรายละเอียด
+            </Button>
+            <Button Type="@ButtonType.Link" Size="ButtonSize.Small" OnClick="@(() => Nav.NavigateTo($"/edit-customer/{context.Id}"))">
+                แก้ไข
+            </Button>
+        </ActionColumn>
+    </Table>
+</div>
 
 <Drawer Title="@("รายละเอียดลูกค้า")"
         Width="480"

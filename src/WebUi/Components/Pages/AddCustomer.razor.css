@@ -1,49 +1,85 @@
+/* Form card — Material Design 3 surface container */
+.form-card {
+    background: var(--md-surface-container-lowest);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: var(--md-radius-xl);
+    box-shadow: 0 1px 3px rgba(11, 28, 48, 0.06);
+    overflow: hidden;
+}
+
+.form-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 24px;
+    border-bottom: 1px solid var(--md-outline-variant);
+    background: rgba(239, 244, 255, 0.5);
+}
+.form-card-icon {
+    color: var(--md-secondary);
+    font-size: 24px;
+}
+.form-card-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--md-on-surface);
+}
+
+.form-card-body {
+    padding: 24px;
+}
+
+/* Action row — right-aligned buttons with icon */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+}
+.btn-icon {
+    font-size: 18px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
 /* Drag-and-drop upload area styled like AntDesign Upload.Drag */
 .idcard-upload-wrapper {
     margin-bottom: 16px;
 }
-
-.idcard-upload-wrapper ::deep .idcard-upload-input {
-    display: none;
-}
-
+.idcard-upload-wrapper ::deep .idcard-upload-input { display: none; }
 .idcard-upload-wrapper ::deep .ant-upload.ant-upload-drag {
     display: block;
     width: 100%;
     padding: 16px;
-    border: 1px dashed #d9d9d9;
-    border-radius: 8px;
-    background: #fafafa;
+    border: 1px dashed var(--md-outline-variant);
+    border-radius: var(--md-radius-lg);
+    background: var(--md-surface-container-low);
     cursor: pointer;
     transition: border-color 0.3s, background 0.3s;
     text-align: center;
     box-sizing: border-box;
 }
-
 .idcard-upload-wrapper ::deep .ant-upload.ant-upload-drag:hover {
-    border-color: #1677ff;
+    border-color: var(--md-secondary);
 }
-
 .idcard-upload-wrapper ::deep .ant-upload.ant-upload-drag.ant-upload-drag-hover {
-    border-color: #1677ff;
-    background: #e6f4ff;
+    border-color: var(--md-secondary);
+    background: var(--md-surface-container);
 }
-
 .idcard-upload-wrapper ::deep .ant-upload-drag-icon {
     margin-bottom: 8px;
-    color: #1677ff;
+    color: var(--md-secondary);
     font-size: 40px;
 }
-
 .idcard-upload-wrapper ::deep .ant-upload-text {
     margin: 0 0 4px;
-    color: rgba(0, 0, 0, 0.88);
+    color: var(--md-on-surface);
     font-size: 14px;
 }
-
 .idcard-upload-wrapper ::deep .ant-upload-hint {
     margin: 0;
-    color: rgba(0, 0, 0, 0.45);
+    color: var(--md-on-surface-variant);
     font-size: 12px;
 }
 
