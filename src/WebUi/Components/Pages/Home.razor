@@ -1,4 +1,6 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@using Application.Features.Customers.Queries.SearchCustomers
 @using WebUi.Components.Shared
 
 <PageTitle>หน้าหลัก</PageTitle>
@@ -6,80 +8,87 @@
 <CimPageHeader Title="ระบบจัดการข้อมูลลูกค้า"
             Description="ยินดีต้อนรับกลับ, สรุปภาพรวมข้อมูลลูกค้าของคุณวันนี้" />
 
-<div class="stat-grid">
-    <div class="stat-card">
-        <div class="stat-card-top">
-            <div class="stat-icon stat-icon-primary">
-                <span class="material-symbols-outlined">groups</span>
+@if (loading)
+{
+    <div style="text-align: center; padding: 48px 0;">
+        <Spin />
+    </div>
+}
+else
+{
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-card-top">
+                <div class="stat-icon stat-icon-primary">
+                    <span class="material-symbols-outlined">groups</span>
+                </div>
             </div>
-            <span class="stat-trend">
-                +12% <span class="material-symbols-outlined stat-trend-icon">trending_up</span>
-            </span>
+            <p class="stat-label">จำนวนลูกค้าทั้งหมด</p>
+            <h3 class="stat-value">@totalCustomers.ToString("N0")</h3>
         </div>
-        <p class="stat-label">จำนวนลูกค้าทั้งหมด</p>
-        <h3 class="stat-value">12,840</h3>
-    </div>
 
-    <div class="stat-card">
-        <div class="stat-card-top">
-            <div class="stat-icon stat-icon-secondary">
-                <span class="material-symbols-outlined">person_add</span>
+        <div class="stat-card stat-card-cta">
+            <div class="stat-cta-content">
+                <h3 class="stat-cta-title">เข้าถึงด่วน</h3>
+                <p class="stat-cta-desc">จัดการข้อมูลลูกค้าได้รวดเร็วยิ่งขึ้นด้วยเครื่องมือลัด</p>
             </div>
-            <span class="stat-trend">
-                +5% <span class="material-symbols-outlined stat-trend-icon">trending_up</span>
-            </span>
-        </div>
-        <p class="stat-label">เพิ่มใหม่เดือนนี้</p>
-        <h3 class="stat-value">452</h3>
-    </div>
-
-    <div class="stat-card stat-card-cta">
-        <div class="stat-cta-content">
-            <h3 class="stat-cta-title">เข้าถึงด่วน</h3>
-            <p class="stat-cta-desc">จัดการข้อมูลลูกค้าได้รวดเร็วยิ่งขึ้นด้วยเครื่องมือลัด</p>
-        </div>
-        <div class="stat-cta-actions">
-            <a class="stat-cta-btn" href="add-customer">
-                <span class="material-symbols-outlined">person_add</span>
-                <span>เพิ่มลูกค้าใหม่</span>
-            </a>
-            <a class="stat-cta-btn" href="search-customer">
-                <span class="material-symbols-outlined">manage_search</span>
-                <span>ค้นหาแบบละเอียด</span>
-            </a>
-        </div>
-    </div>
-</div>
-
-<div class="dashboard-row">
-    <div class="dashboard-card dashboard-card-main">
-        <div class="dashboard-card-header">
-            <h3 class="dashboard-card-title">รายชื่อลูกค้าล่าสุด</h3>
-            <a class="dashboard-card-link" href="search-customer">ดูทั้งหมด</a>
-        </div>
-        <div class="dashboard-empty">
-            <span class="material-symbols-outlined dashboard-empty-icon">inbox</span>
-            <p>ยังไม่มีข้อมูลลูกค้าล่าสุด</p>
+            <div class="stat-cta-actions">
+                <a class="stat-cta-btn" href="add-customer">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>เพิ่มลูกค้าใหม่</span>
+                </a>
+                <a class="stat-cta-btn" href="search-customer">
+                    <span class="material-symbols-outlined">manage_search</span>
+                    <span>ค้นหาแบบละเอียด</span>
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="dashboard-card dashboard-card-side">
-        <div class="dashboard-card-header">
-            <h3 class="dashboard-card-title">เมนูหลัก</h3>
+    <div class="dashboard-row">
+        <div class="dashboard-card dashboard-card-main">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">รายชื่อลูกค้าล่าสุด</h3>
+                <a class="dashboard-card-link" href="search-customer">ดูทั้งหมด</a>
+            </div>
+            @if (recentCustomers.Count == 0)
+            {
+                <div class="dashboard-empty">
+                    <span class="material-symbols-outlined dashboard-empty-icon">inbox</span>
+                    <p>ยังไม่มีข้อมูลลูกค้าล่าสุด</p>
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-list">
+                    @foreach (var c in recentCustomers)
+                    {
+                        <a class="dashboard-list-item" href="@($"edit-customer/{c.Id}")">
+                            <div class="dashboard-list-meta">
+                                <span class="dashboard-list-name">@c.FirstName @c.LastName</span>
+                                <span class="dashboard-list-sub">@c.NationalId</span>
+                            </div>
+                            <span class="dashboard-list-province">@c.Province</span>
+                        </a>
+                    }
+                </div>
+            }
         </div>
-        <nav class="dashboard-menu">
-            <a class="dashboard-menu-link" href="add-customer">
-                <span class="material-symbols-outlined">person_add</span>
-                <span>เพิ่มข้อมูลลูกค้า</span>
-            </a>
-            <a class="dashboard-menu-link" href="search-customer">
-                <span class="material-symbols-outlined">search</span>
-                <span>ค้นหาลูกค้า</span>
-            </a>
-            <a class="dashboard-menu-link" href="report">
-                <span class="material-symbols-outlined">assessment</span>
-                <span>รายงาน</span>
-            </a>
-        </nav>
+
+        <div class="dashboard-card dashboard-card-side">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">เมนูหลัก</h3>
+            </div>
+            <nav class="dashboard-menu">
+                <a class="dashboard-menu-link" href="add-customer">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>เพิ่มข้อมูลลูกค้า</span>
+                </a>
+                <a class="dashboard-menu-link" href="search-customer">
+                    <span class="material-symbols-outlined">search</span>
+                    <span>ค้นหาลูกค้า</span>
+                </a>
+            </nav>
+        </div>
     </div>
-</div>
+}

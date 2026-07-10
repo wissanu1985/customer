@@ -1,9 +1,9 @@
-/* ===== Material Design 3 tokens (from .stitch-ref tailwind config) ===== */
+/* ===== Material Design 3 tokens — formal dark-blue + dark-red accent ===== */
 :root {
     --md-primary: #001e40;
     --md-on-primary: #ffffff;
-    --md-primary-container: #003366;
-    --md-on-primary-container: #799dd6;
+    --md-primary-container: #00246f;
+    --md-on-primary-container: #90a9ff;
     --md-on-primary-fixed-variant: #1f477b;
     --md-secondary: #0060ac;
     --md-on-secondary: #ffffff;
@@ -11,7 +11,7 @@
     --md-on-secondary-container: #003e73;
     --md-on-secondary-fixed-variant: #004883;
     --md-tertiary: #1b1f21;
-    --md-error: #ba1a1a;
+    --md-error: #b40000;
     --md-on-error: #ffffff;
     --md-error-container: #ffdad6;
     --md-on-error-container: #93000a;
@@ -36,6 +36,7 @@
     --md-primary-fixed-dim: #a7c8ff;
     --md-secondary-fixed: #d4e3ff;
     --md-secondary-fixed-dim: #a4c9ff;
+    --md-accent-red: #b40000;
 
     --md-radius-sm: 0.25rem;
     --md-radius: 0.5rem;
@@ -64,7 +65,7 @@
     --ant-color-primary-text-active: #004883;
     --ant-color-success: #2e7d32;
     --ant-color-warning: #ed6c02;
-    --ant-color-error: #ba1a1a;
+    --ant-color-error: #b40000;
     --ant-color-info: #0060ac;
     --ant-color-text: #0b1c30;
     --ant-color-text-secondary: #43474f;
