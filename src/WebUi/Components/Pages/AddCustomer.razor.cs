@@ -18,6 +18,7 @@ public partial class AddCustomer
     private CustomerFormModel model = new();
     private bool submitting;
     private bool validateOnChange; // Enable live re-validation only after first submit attempt
+    private Form<CustomerFormModel> _form = default!;
 
     private List<ProvinceItem> provinces = new();
     private List<DistrictItem> districts = new();
@@ -104,6 +105,12 @@ public partial class AddCustomer
         if (item is not null && !string.IsNullOrWhiteSpace(item.PostalCode))
         {
             model.PostalCode = item.PostalCode;
+
+            // PostalCode is read-only; manually trigger validation so the stale red error clears
+            if (validateOnChange)
+            {
+                _form.Validate();
+            }
         }
     }
 

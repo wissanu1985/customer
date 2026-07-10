@@ -7,7 +7,7 @@
 
 <h1>เพิ่มลูกค้า</h1>
 
-<Form Model="@model" Layout="@FormLayout.Vertical" OnFinish="HandleSubmitAsync" OnFinishFailed="OnSubmitFailedAsync" ValidateOnChange="@validateOnChange">
+<Form @ref="_form" Model="@model" Layout="@FormLayout.Vertical" OnFinish="HandleSubmitAsync" OnFinishFailed="OnSubmitFailedAsync" ValidateOnChange="@validateOnChange">
     <FormItem Label="เลขบัตรประจำตัว" Name="NationalId">
         <Input @bind-Value="@context.NationalId" Placeholder="กรอกเลขบัตรประจำตัว 13 หลัก" MaxLength="13" />
     </FormItem>
